@@ -350,6 +350,9 @@ function MethodRow({
   // Pseudo Revolut (aperçu « @… ») : on annonce le paiement direct. Le lien
   // lui-même vient du serveur, qui revalide la valeur.
   const offersPay = canPay && method.type === "revolut" && method.valuePreview.startsWith("@");
+  // Dérivé à chaque rendu : dès que la dette passe en « déclarée payée »,
+  // le lien disparaît sans attendre la fin des 30 s.
+  const shownPayUrl = canPay ? payUrl : null;
 
   async function reveal() {
     setError(null);
@@ -357,7 +360,7 @@ function MethodRow({
       const result = await revealIbanAction({ shortId, methodId: method.id, debtId });
       if (result.ok) {
         setRevealed(result.value);
-        setPayUrl(canPay ? result.payUrl : null);
+        setPayUrl(result.payUrl);
         // Auto-hide after 30s so the raw value doesn't linger in the DOM.
         window.setTimeout(() => {
           setRevealed(null);
@@ -394,21 +397,24 @@ function MethodRow({
           <span className="font-mono text-sm text-ink-700">{revealed ?? method.valuePreview}</span>
           {error && <span className="text-xs text-erreur-700">{error}</span>}
         </div>
-        {payUrl ? (
-          // Vrai lien touché par l'utilisateur : c'est ce geste qui permet au
-          // téléphone d'ouvrir l'appli Revolut plutôt que la page web.
-          <a
-            href={payUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${pillClass} border-hot-500 text-acid-700`}
-          >
-            <ExternalLink size={12} /> Ouvrir Revolut
-          </a>
-        ) : revealed ? (
-          <button type="button" onClick={copy} className={pillClass} aria-label="Copier">
-            <Copy size={12} /> Copier
-          </button>
+        {revealed ? (
+          <div className="flex items-center gap-1.5">
+            {shownPayUrl && (
+              // Vrai lien touché par l'utilisateur : c'est ce geste qui permet
+              // au téléphone d'ouvrir l'appli Revolut plutôt que la page web.
+              <a
+                href={shownPayUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${pillClass} border-hot-500 text-acid-700`}
+              >
+                <ExternalLink size={12} /> Ouvrir Revolut
+              </a>
+            )}
+            <button type="button" onClick={copy} className={pillClass} aria-label="Copier">
+              <Copy size={12} /> Copier
+            </button>
+          </div>
         ) : (
           <button
             type="button"
@@ -428,7 +434,7 @@ function MethodRow({
           </button>
         )}
       </div>
-      {payUrl && (
+      {shownPayUrl && (
         <p className="text-xs text-ink-400">
           Montant et note déjà remplis dans Revolut. Une fois payé, reviens toucher « J&rsquo;ai
           payé ».

@@ -14,8 +14,9 @@ import { sanitizeStrictText } from "@/lib/sanitize";
 export type RevolutInput = { kind: "tag"; tag: string } | { kind: "invalid" } | { kind: "other" };
 
 const TAG_RE = /^[a-z0-9][a-z0-9._-]{2,31}$/;
-// Host must not be glued to a preceding label (evilrevolut.me, x.revolut.me).
-const LINK_RE = /(?<![a-z0-9.-])(?:https?:\/\/)?(?:www\.)?revolut\.me\/([^\s?#]*)/gi;
+// Host must not be glued to a preceding label (evilrevolut.me, x.revolut.me)
+// nor sit inside another URL's path or an e-mail (evil.com/revolut.me/…).
+const LINK_RE = /(?<![a-z0-9.\/@-])(?:https?:\/\/)?(?:www\.)?revolut\.me\/([^\s?#]*)/gi;
 
 function toTag(candidate: string): string | null {
   const tag = candidate.toLowerCase();
@@ -89,7 +90,9 @@ export function payUrlForMethod(args: {
   amountCents: number;
   outingTitle: string;
 }): string | null {
-  if (args.type !== "revolut") {
+  // Only the canonical "@tag" form: an old free-text row ("Jeanne") must
+  // not turn into a link to whoever owns @jeanne.
+  if (args.type !== "revolut" || !args.value.startsWith("@")) {
     return null;
   }
   const parsed = parseRevolutInput(args.value);

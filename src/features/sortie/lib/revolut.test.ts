@@ -26,6 +26,11 @@ describe("parseRevolutInput", () => {
     expect(parseRevolutInput("jean@gmail.com")).toEqual({ kind: "other" });
   });
 
+  it("refuse un lien revolut.me caché dans le chemin d'un autre site", () => {
+    expect(parseRevolutInput("https://evil.com/revolut.me/jean")).toEqual({ kind: "invalid" });
+    expect(parseRevolutInput("jean@revolut.me/jean")).toEqual({ kind: "invalid" });
+  });
+
   it("refuse un faux domaine qui contient revolut.me", () => {
     expect(parseRevolutInput("https://evilrevolut.me/yogzgo")).toEqual({ kind: "invalid" });
     expect(parseRevolutInput("https://x.revolut.me/yogzgo")).toEqual({ kind: "invalid" });
@@ -100,6 +105,11 @@ describe("payUrlForMethod", () => {
   // Revalidation à la révélation : les anciennes lignes sont des saisies libres.
   it("pas de lien pour un Revolut enregistré par numéro", () => {
     expect(payUrlForMethod({ ...base, type: "revolut", value: "+33 6 12 34 56 78" })).toBeNull();
+  });
+
+  // Relecture : une ancienne saisie libre « Jeanne » ne doit pas payer @jeanne.
+  it("pas de lien pour une ancienne saisie sans @", () => {
+    expect(payUrlForMethod({ ...base, type: "revolut", value: "Jeanne" })).toBeNull();
   });
 
   it("pas de lien pour une ancienne saisie libre douteuse", () => {
