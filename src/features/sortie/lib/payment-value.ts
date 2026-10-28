@@ -14,6 +14,17 @@ const HANDLE_MIN = 4;
 const HANDLE_MAX = 50;
 
 /**
+ * Debtor-side order: a Revolut pseudo (one-tap « Payer » link) comes first,
+ * everything else keeps the order it was given in (callers sort by
+ * creation). Owner decision 2026-10-28: Revolut by default, the rest as
+ * backup — no per-user "default" setting.
+ */
+export function payLinkFirst<T extends { type: string; valuePreview: string }>(methods: T[]): T[] {
+  const hasPayLink = (m: T) => m.type === "revolut" && m.valuePreview.startsWith("@");
+  return [...methods.filter(hasPayLink), ...methods.filter((m) => !hasPayLink(m))];
+}
+
+/**
  * Copy of the value field in both "add a payment method" forms. Hints are
  * truncated ("…") so nobody mistakes them for an already filled value.
  */

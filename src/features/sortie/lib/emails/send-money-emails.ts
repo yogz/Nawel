@@ -1,4 +1,5 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
+import { payLinkFirst } from "@/features/sortie/lib/payment-value";
 import { db } from "@/lib/db";
 import { user } from "@drizzle/schema";
 import { debts, participants, purchaserPaymentMethods } from "@drizzle/sortie-schema";
@@ -45,8 +46,9 @@ async function fetchMethodsFor(participantId: string): Promise<PaymentMethodPrev
       displayLabel: purchaserPaymentMethods.displayLabel,
     })
     .from(purchaserPaymentMethods)
-    .where(eq(purchaserPaymentMethods.participantId, participantId));
-  return rows;
+    .where(eq(purchaserPaymentMethods.participantId, participantId))
+    .orderBy(asc(purchaserPaymentMethods.createdAt), asc(purchaserPaymentMethods.id));
+  return payLinkFirst(rows);
 }
 
 /**

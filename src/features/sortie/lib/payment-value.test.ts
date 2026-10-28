@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canonicalPaymentValue } from "./payment-value";
+import { canonicalPaymentValue, payLinkFirst } from "./payment-value";
 
 describe("canonicalPaymentValue", () => {
   it("IBAN : normalisé et masqué comme avant", () => {
@@ -47,5 +47,33 @@ describe("canonicalPaymentValue", () => {
       canonical: "0612345678",
       preview: "** ** ** 78",
     });
+  });
+});
+
+describe("payLinkFirst", () => {
+  it("met le Revolut à lien direct en premier, garde l'ordre d'ajout pour le reste", () => {
+    const methods = [
+      { id: "wero", type: "wero", valuePreview: "+33 6 ** ** ** 34" },
+      { id: "iban", type: "iban", valuePreview: "FR76 **** 1234" },
+      { id: "rev", type: "revolut", valuePreview: "@yogzgo" },
+    ];
+    expect(payLinkFirst(methods).map((m) => m.id)).toEqual(["rev", "wero", "iban"]);
+  });
+
+  it("un Revolut par numéro n'est pas avancé", () => {
+    const methods = [
+      { id: "wero", type: "wero", valuePreview: "+33 6 ** ** ** 34" },
+      { id: "rev", type: "revolut", valuePreview: "+33 6 ** ** ** 34" },
+    ];
+    expect(payLinkFirst(methods).map((m) => m.id)).toEqual(["wero", "rev"]);
+  });
+
+  it("ne modifie pas la liste reçue", () => {
+    const methods = [
+      { id: "wero", type: "wero", valuePreview: "x" },
+      { id: "rev", type: "revolut", valuePreview: "@a1b" },
+    ];
+    payLinkFirst(methods);
+    expect(methods.map((m) => m.id)).toEqual(["wero", "rev"]);
   });
 });
