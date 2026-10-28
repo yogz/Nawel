@@ -26,6 +26,7 @@ import { endOfDayInParis } from "@/features/sortie/lib/date-fr";
 import { SortieCalendar } from "../sortie-calendar";
 import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
+import { AlreadyBoughtToggle } from "./already-bought-toggle";
 import { VIBE_CONFIG, defaultStartTimeFor, isVibe, type Vibe } from "../../lib/vibe-config";
 import { EventSuggestions } from "./event-suggestions";
 import { GeminiSuggestionCard } from "./gemini-suggestion-card";
@@ -78,6 +79,9 @@ type Draft = {
   // auto-computed default (24h / 1w / 2w / 3w before depending on how
   // far out the event is).
   rsvpDeadline: Date | null;
+  // « J'ai déjà les billets » (connecté, date fixe) : pas de date limite,
+  // on enchaîne sur « Qui vient ? » après publication.
+  alreadyBought: boolean;
   creatorDisplayName: string;
   creatorEmail: string;
 };
@@ -175,6 +179,7 @@ function tryRestoreDraft(payload: unknown): { draft: Draft; step: Step } | null 
     timeTouched: typeof rawDraft.timeTouched === "boolean" ? rawDraft.timeTouched : false,
     slots,
     rsvpDeadline: parseDate(rawDraft.rsvpDeadline),
+    alreadyBought: rawDraft.alreadyBought === true,
     creatorDisplayName:
       typeof rawDraft.creatorDisplayName === "string" ? rawDraft.creatorDisplayName : "",
     creatorEmail: typeof rawDraft.creatorEmail === "string" ? rawDraft.creatorEmail : "",
@@ -269,6 +274,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
       timeTouched: false,
       slots: [],
       rsvpDeadline: null,
+      alreadyBought: false,
       creatorDisplayName: defaultCreatorName ?? "",
       creatorEmail: "",
     };
@@ -421,7 +427,13 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
       fd.set("timeslots", JSON.stringify(slotsJson));
     }
 
-    if (draft.rsvpDeadline) {
+    // Même condition que l'affichage de la case (WhenStep / CommitStep) :
+    // un brouillon restauré avec des créneaux en plus ne l'active pas.
+    const alreadyBought =
+      publishMode === "fixed" && isLoggedIn && draft.alreadyBought && draft.slots.length === 0;
+    if (alreadyBought) {
+      fd.set("alreadyBought", "on");
+    } else if (draft.rsvpDeadline) {
       fd.set("rsvpDeadline", toUtcIsoString(draft.rsvpDeadline));
     }
     if (draft.venue) {
@@ -642,6 +654,11 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
                 pendingDate={draft.date}
                 pendingTime={draft.time}
                 deadline={draft.rsvpDeadline}
+                canOfferAlreadyBought={isLoggedIn}
+                alreadyBought={draft.alreadyBought}
+                onAlreadyBoughtChange={(alreadyBought) =>
+                  setDraft((d) => ({ ...d, alreadyBought }))
+                }
                 onSlotsChange={(slots) => setDraft((d) => ({ ...d, slots }))}
                 onPendingDateChange={(date) => setDraft((d) => ({ ...d, date }))}
                 onPendingTimeChange={(time) => setDraft((d) => ({ ...d, time, timeTouched: true }))}
@@ -1598,6 +1615,9 @@ function WhenStep({
   pendingDate,
   pendingTime,
   deadline,
+  canOfferAlreadyBought,
+  alreadyBought,
+  onAlreadyBoughtChange,
   onSlotsChange,
   onPendingDateChange,
   onPendingTimeChange,
@@ -1609,6 +1629,9 @@ function WhenStep({
   pendingDate: Date | null;
   pendingTime: string | null;
   deadline: Date | null;
+  canOfferAlreadyBought: boolean;
+  alreadyBought: boolean;
+  onAlreadyBoughtChange: (next: boolean) => void;
   onSlotsChange: (next: DraftSlot[]) => void;
   onPendingDateChange: (date: Date | null) => void;
   onPendingTimeChange: (time: string | null) => void;
@@ -1620,6 +1643,10 @@ function WhenStep({
   const canAddMore = slots.length < 8;
   const pickerFilled = pendingDate !== null && pendingTime !== null;
   const canProceed = slots.length >= 1 || pickerFilled;
+  // « J'ai déjà les billets » : seulement connecté, une seule date (pas de
+  // sondage). Cochée, la date limite et les autres créneaux disparaissent.
+  const offerAlreadyBought = canOfferAlreadyBought && slots.length === 0 && pickerFilled;
+  const showAlreadyBought = offerAlreadyBought && alreadyBought;
 
   // Earliest slot (committed or pending) drives the deadline preview —
   // closing the invitation the moment the first-possible date arrives
@@ -1748,7 +1775,7 @@ function WhenStep({
       {/* Ghost row — the whole point of this step. Appears only once a
           first slot is pickable, so the invitation to propose alternatives
           stays hidden from users who just want a fixed date. */}
-      {slots.length === 0 && pickerFilled && canAddMore && (
+      {slots.length === 0 && pickerFilled && canAddMore && !showAlreadyBought && (
         <button
           type="button"
           onClick={commitPending}
@@ -1758,7 +1785,7 @@ function WhenStep({
         </button>
       )}
 
-      {!pickerOpen && canAddMore && (
+      {!pickerOpen && canAddMore && !showAlreadyBought && (
         <Button
           type="button"
           variant="outline"
@@ -1775,7 +1802,11 @@ function WhenStep({
         </p>
       )}
 
-      {earliest && (
+      {offerAlreadyBought && (
+        <AlreadyBoughtToggle checked={alreadyBought} onChange={onAlreadyBoughtChange} />
+      )}
+
+      {earliest && !showAlreadyBought && (
         <DeadlineSection
           startsAt={earliest}
           deadline={deadline}
@@ -2152,6 +2183,9 @@ function CommitStep({
   error: string | null;
   onPublish: () => Promise<void>;
 }) {
+  // Même condition que l'envoi au serveur (cf. publish).
+  const alreadyBought =
+    isLoggedIn && draft.alreadyBought && draft.slots.length === 0 && draft.date !== null;
   const dateText = useMemo(() => {
     if (!draft.date || !draft.time) {
       return "";
@@ -2203,6 +2237,11 @@ function CommitStep({
             {draft.title}
           </h2>
           <p className="mt-3 text-sm font-semibold text-acid-700">{dateText}</p>
+          {alreadyBought && (
+            <p className="mt-2 inline-flex rounded-full bg-acid-600 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-surface-50">
+              Billets pris
+            </p>
+          )}
           {draft.venue && <p className="mt-1 text-sm text-ink-500">{draft.venue}</p>}
           {!isLoggedIn && draft.creatorDisplayName && (
             <p className="mt-4 text-xs font-black uppercase tracking-[0.12em] text-ink-400">
@@ -2219,9 +2258,14 @@ function CommitStep({
       )}
 
       <div className="mt-auto">
-        <SwipeToPublish onConfirm={onPublish} />
+        <SwipeToPublish
+          onConfirm={onPublish}
+          label={alreadyBought ? "GLISSE POUR CRÉER" : undefined}
+        />
         <p className="mt-3 text-center text-xs text-ink-400">
-          Les réponses se ferment toutes seules avant la date.
+          {alreadyBought
+            ? "Personne n’est prévenu pour l’instant. Ensuite : qui vient, puis le prix."
+            : "Les réponses se ferment toutes seules avant la date."}
         </p>
       </div>
     </section>
