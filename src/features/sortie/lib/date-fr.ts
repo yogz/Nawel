@@ -18,6 +18,19 @@ export function parisDayKey(date: Date): string {
   return parisDayKeyFormatter.format(date);
 }
 
+/**
+ * Nombre de jours calendaires Paris entre `from` et `to` (0 = même jour,
+ * 1 = lendemain). Compte les minuits franchis, pas les tranches de 24h :
+ * mardi 23h → mercredi 8h vaut 1.
+ */
+export function parisCalendarDaysBetween(from: Date, to: Date): number {
+  // Les clés "YYYY-MM-DD" parsées en UTC donnent des minuits sans DST,
+  // donc la différence est toujours un multiple exact de 24h.
+  const fromMs = Date.parse(parisDayKey(from));
+  const toMs = Date.parse(parisDayKey(to));
+  return Math.round((toMs - fromMs) / (24 * 60 * 60 * 1000));
+}
+
 const parisHourMinuteFormatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: TZ,
   hour: "2-digit",

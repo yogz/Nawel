@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formatOutingDate, formatOutingDateConversational, formatOutingDateShort } from "./date-fr";
+import {
+  formatOutingDate,
+  formatOutingDateConversational,
+  formatOutingDateShort,
+  parisCalendarDaysBetween,
+} from "./date-fr";
 
 // 2026-12-12 20:30 Paris time — a winter date so we're on CET (UTC+1).
 const SAMPLE = new Date("2026-12-12T19:30:00Z");
@@ -30,5 +35,37 @@ describe("date-fr formatters", () => {
 
   it("formatOutingDateConversational ajoute l'année quand différente", () => {
     expect(formatOutingDateConversational(SAMPLE, NOW_NEXT_YEAR)).toBe("12 décembre 2026 à 20h30");
+  });
+});
+
+describe("parisCalendarDaysBetween", () => {
+  it("compte les minuits Paris franchis, pas les tranches de 24h", () => {
+    // Mardi 23h → mercredi 8h Paris : 9h d'écart mais 1 jour calendaire.
+    expect(
+      parisCalendarDaysBetween(
+        new Date("2026-11-03T23:00:00+01:00"),
+        new Date("2026-11-04T08:00:00+01:00")
+      )
+    ).toBe(1);
+  });
+
+  it("vaut 0 le même jour Paris, même quand la date UTC diffère", () => {
+    // 00h30 Paris = 23h30 UTC la veille.
+    expect(
+      parisCalendarDaysBetween(
+        new Date("2026-11-04T00:30:00+01:00"),
+        new Date("2026-11-04T21:00:00+01:00")
+      )
+    ).toBe(0);
+  });
+
+  it("reste juste à travers un changement d'heure", () => {
+    // Passage à l'heure d'hiver le 25 octobre 2026.
+    expect(
+      parisCalendarDaysBetween(
+        new Date("2026-10-21T09:00:00+02:00"),
+        new Date("2026-10-28T20:00:00+01:00")
+      )
+    ).toBe(7);
   });
 });
