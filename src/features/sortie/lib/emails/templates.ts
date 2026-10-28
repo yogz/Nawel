@@ -832,7 +832,8 @@ export function accountMethodConfirmEmail(args: {
       Le lien expire dans 15 minutes. Tant qu&rsquo;il n&rsquo;est pas confirmé, ce moyen n&rsquo;est envoyé à personne.
     </p>
     <p style="margin:0;font-size:13px;color:${INK_MUTED};line-height:1.6;">
-      Ce n&rsquo;est pas toi ? Ignore ce mail&nbsp;: rien ne sera ajouté.
+      Tu n&rsquo;as rien ajouté il y a quelques minutes ? Ne clique pas et change ton mot de passe&nbsp;:
+      quelqu&rsquo;un d&rsquo;autre a peut-être accès à ton compte. Sans clic, rien n&rsquo;est ajouté.
     </p>
   `;
   return {
@@ -870,7 +871,8 @@ export function accountMethodChangedEmail(args: {
       ${ctaButton(args.accountUrl, "Voir mes moyens de paiement")}
     </p>
     <p style="margin:0;font-size:13px;color:${INK_MUTED};line-height:1.6;">
-      Ce n&rsquo;est pas toi ? Connecte-toi et vérifie tes moyens de paiement.
+      Ce n&rsquo;est pas toi ? Change ton mot de passe, puis vérifie tes moyens de paiement&nbsp;:
+      quelqu&rsquo;un d&rsquo;autre a peut-être accès à ton compte.
     </p>
   `;
   return {

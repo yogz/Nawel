@@ -19,6 +19,14 @@ describe("accountMethodConfirmEmail", () => {
       confirmUrl: CONFIRM_URL,
     });
 
+  // Relecture finale (I2) : si quelqu'un d'autre a le mot de passe du compte,
+  // c'est le vrai propriétaire qui reçoit ce mail — il ne doit pas cliquer.
+  it("dit de ne pas cliquer et de changer de mot de passe si ce n'est pas soi", () => {
+    expect(email().html).toContain(
+      "Tu n&rsquo;as rien ajouté il y a quelques minutes ? Ne clique pas et change ton mot de passe"
+    );
+  });
+
   it("demande de confirmer le nouveau moyen", () => {
     expect(email().subject).toBe("Confirme ton nouveau moyen de paiement");
   });
@@ -74,5 +82,15 @@ describe("accountMethodChangedEmail", () => {
       accountUrl: ACCOUNT_URL,
     });
     expect(html).not.toContain("<b>x</b>");
+  });
+
+  it("dit quoi faire si quelqu'un d'autre a modifié les moyens", () => {
+    const { html } = accountMethodChangedEmail({
+      change: "removed",
+      type: "iban",
+      valuePreview: "FR76 **** 1234",
+      accountUrl: ACCOUNT_URL,
+    });
+    expect(html).toContain("Ce n&rsquo;est pas toi ? Change ton mot de passe");
   });
 });
