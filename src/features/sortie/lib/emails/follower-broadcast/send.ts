@@ -6,7 +6,7 @@ import { outings } from "@drizzle/sortie-schema";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { listFollowersToNotify } from "./queries";
-import { signOptOutToken } from "./opt-out-token";
+import { buildUnsubscribeUrl, signOptOutToken } from "./opt-out-token";
 
 const SORTIE_BASE_URL = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr").replace(
   /\/$/,
@@ -132,9 +132,7 @@ export async function sendNewOutingBroadcast(args: {
       const chunk = recipients.slice(i, i + CHUNK);
       await Promise.all(
         chunk.map(async (r) => {
-          const unsubscribeUrl = `${SORTIE_BASE_URL}/sortie/unsubscribe?t=${encodeURIComponent(
-            signOptOutToken(r.id)
-          )}`;
+          const unsubscribeUrl = buildUnsubscribeUrl(SORTIE_BASE_URL, signOptOutToken(r.id));
           try {
             await auth.api.signInMagicLink({
               headers: headersForAuth,

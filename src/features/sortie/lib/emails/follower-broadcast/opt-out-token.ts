@@ -14,6 +14,15 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 const SECRET_ENV = "SORTIE_UNSUBSCRIBE_SECRET";
 
+/**
+ * Lien public de désabonnement. Chemin vu par le navigateur sur le host
+ * Sortie : le proxy ajoute lui-même le préfixe interne `/sortie` (un
+ * `/sortie/unsubscribe` ici donnait une 404).
+ */
+export function buildUnsubscribeUrl(baseUrl: string, token: string): string {
+  return `${baseUrl}/unsubscribe?t=${encodeURIComponent(token)}`;
+}
+
 function getSecret(): string {
   const s = process.env[SECRET_ENV];
   if (!s || s.length < 32) {

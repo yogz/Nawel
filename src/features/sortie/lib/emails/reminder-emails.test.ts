@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { j1ReminderEmail, j7ReminderEmail } from "./templates";
+import { calendarPitchFor, j1ReminderEmail, j7ReminderEmail } from "./templates";
 
 // Samedi 21 novembre 2026, 20h30 Paris.
 const OUTING = {
@@ -62,10 +62,38 @@ describe("j7ReminderEmail", () => {
   });
 });
 
+describe("proposition du calendrier Sortie dans le J-7", () => {
+  it("annonce la connexion à qui n'a pas de compte", () => {
+    const { html } = j7ReminderEmail({ ...OUTING, calendarPitch: "anonymous" });
+    expect(html).toContain("Connecte-toi avec ton email et ajoute le calendrier Sortie");
+    // Chemin public : `/sortie/moi` est une 404 sur sortie.colist.fr.
+    expect(html).toContain('href="https://sortie.colist.fr/moi"');
+  });
+
+  it("propose seulement l'ajout à qui a un compte sans agenda", () => {
+    const { html } = j7ReminderEmail({ ...OUTING, calendarPitch: "account" });
+    expect(html).toContain("Ajoute le calendrier Sortie");
+    expect(html).not.toContain("Connecte-toi");
+  });
+
+  it("ne dit rien à qui a déjà son lien d'agenda, ni dans le rappel de la veille", () => {
+    expect(j7ReminderEmail({ ...OUTING, calendarPitch: null }).html).not.toContain("calendrier");
+    expect(j1ReminderEmail(OUTING, tickOn("2026-11-20")).html).not.toContain("calendrier");
+  });
+
+  it("choisit la phrase selon le compte et le lien d'agenda", () => {
+    expect(calendarPitchFor({ userId: null, user: null })).toBe("anonymous");
+    expect(calendarPitchFor({ userId: "u1", user: { calendarToken: null } })).toBe("account");
+    expect(calendarPitchFor({ userId: "u1", user: { calendarToken: "tok" } })).toBeNull();
+  });
+});
+
 describe("rappels", () => {
   it("n'utilisent ni deux-points ni tiret cadratin dans leur texte", () => {
     const emails = [
       j7ReminderEmail(OUTING),
+      j7ReminderEmail({ ...OUTING, calendarPitch: "anonymous" }),
+      j7ReminderEmail({ ...OUTING, calendarPitch: "account" }),
       j1ReminderEmail(OUTING, tickOn("2026-11-19")),
       j1ReminderEmail(OUTING, tickOn("2026-11-20")),
       j1ReminderEmail(OUTING, tickOn("2026-11-21")),
