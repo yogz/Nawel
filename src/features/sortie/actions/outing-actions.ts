@@ -25,6 +25,7 @@ import {
 } from "@/features/sortie/lib/emails/send-outing-emails";
 import { sendNewOutingBroadcast } from "@/features/sortie/lib/emails/follower-broadcast";
 import { runAfterResponse } from "@/features/sortie/lib/after-response";
+import { resolveAlreadyBoughtCreation } from "@/features/sortie/lib/already-bought/rules";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { canReopenPoll } from "@/features/sortie/lib/can-reopen-poll";
 import { hashIp, OUTING_AUDIT_ACTION } from "@/features/sortie/lib/audit";
@@ -70,7 +71,11 @@ export async function createOutingAction(
   formData: FormData
 ): Promise<FormActionState> {
   const parsed = createOutingSchema.safeParse(
-    withCheckbox(formDataToObject(formData), formData, "showOnProfile")
+    withCheckbox(
+      withCheckbox(formDataToObject(formData), formData, "showOnProfile"),
+      formData,
+      "alreadyBought"
+    )
   );
   if (!parsed.success) {
     return { errors: parsed.error.flatten().fieldErrors };
@@ -88,6 +93,31 @@ export async function createOutingAction(
   // from the same browser, and is the target a magic-link reclaim flips when
   // the creator switches device.
   const cookieTokenHash = await ensureParticipantTokenHash();
+
+  // « J'ai déjà les billets » : réservé à un compte réellement connecté
+  // (jamais l'id d'un compte silencieux, cf. already-bought/rules.ts).
+  const now = new Date();
+  const alreadyBoughtDecision = resolveAlreadyBoughtCreation({
+    requested: data.alreadyBought,
+    sessionUserId: user?.id ?? null,
+    mode: data.mode,
+    startsAt: data.startsAt ?? null,
+    now,
+  });
+  if (!alreadyBoughtDecision.ok) {
+    return { message: alreadyBoughtDecision.message };
+  }
+  const alreadyBought = alreadyBoughtDecision.alreadyBought;
+  if (alreadyBought) {
+    const dailyGate = await rateLimit({
+      key: `already-bought-create:${user!.id}`,
+      limit: 5,
+      windowSeconds: 86_400,
+    });
+    if (!dailyGate.ok) {
+      return { message: dailyGate.message };
+    }
+  }
 
   const shortId = await generateUniqueShortId();
   const title = sanitizeText(data.title, 200);
@@ -155,14 +185,20 @@ export async function createOutingAction(
       heroImageOgUrl,
       vibe: data.vibe ?? null,
       fixedDatetime: data.mode === "fixed" ? (data.startsAt ?? null) : null,
-      deadlineAt: resolveDeadline({
-        rsvpDeadline: data.rsvpDeadline,
-        mode: data.mode,
-        startsAt: data.startsAt,
-        timeslots: data.timeslots,
-      }),
+      // Billets déjà pris : réponses fermées dès la création, et statut
+      // « en attente d'achat » directement — le sweeper (qui ne traite que
+      // `open`) n'enverra donc pas d'e-mail « réponses closes ».
+      deadlineAt: alreadyBought
+        ? now
+        : resolveDeadline({
+            rsvpDeadline: data.rsvpDeadline,
+            mode: data.mode,
+            startsAt: data.startsAt,
+            timeslots: data.timeslots,
+          }),
       mode: data.mode,
-      status: "open",
+      status: alreadyBought ? "awaiting_purchase" : "open",
+      alreadyBought,
       showOnProfile: data.showOnProfile,
       creatorUserId: effectiveCreatorUserId,
       // Quand un userId (logué ou silent) est rattaché, on n'écrit
@@ -210,7 +246,9 @@ export async function createOutingAction(
   // headers maintenant car `runAfterResponse` peut perdre le contexte
   // request — Better Auth a besoin de l'origin pour résoudre baseURL +
   // déclencher la branche Sortie du callback `sendMagicLink`.
-  if (effectiveCreatorUserId) {
+  // Pas de broadcast pour une sortie « billets déjà pris » : il n'y a plus
+  // de place à proposer aux abonnés.
+  if (effectiveCreatorUserId && !alreadyBought) {
     const reqHeaders = await headers();
     runAfterResponse(() =>
       sendNewOutingBroadcast({
@@ -231,7 +269,9 @@ export async function createOutingAction(
   // page — same destination as the public view, but with a contextual
   // "share this now" affordance overlaid so the creator doesn't have to
   // wonder whether their sortie went through.
-  redirect(`${path}?from=create`);
+  // Billets déjà pris : on enchaîne sur « Qui vient ? » plutôt que sur le
+  // bandeau « partage pour récolter des réponses ».
+  redirect(alreadyBought ? `${path}/qui-vient` : `${path}?from=create`);
 }
 
 export async function updateOutingAction(

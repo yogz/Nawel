@@ -76,6 +76,8 @@ export function computeDeadlineOffsetMs(startsAt: Date, now: Date = new Date()):
 
 export const createOutingSchema = z
   .object({
+    // Case « J'ai déjà les billets » (cf. already-bought/rules.ts).
+    alreadyBought: z.boolean().optional().default(false),
     title: trimmedString.min(1).max(200),
     venue: trimmedString
       .max(200)
