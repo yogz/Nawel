@@ -266,6 +266,48 @@ export const purchaserPaymentMethods = sortie.table(
   })
 );
 
+// === user_payment_methods ===
+
+/**
+ * Moyens de paiement enregistrés sur le compte (et non sur une
+ * participation). Copiés — chiffré tel quel, sans déchiffrer — dans
+ * `purchaser_payment_methods` quand le compte connecté déclare un achat.
+ * Cf. docs/superpowers/specs/2026-10-28-sortie-account-payment-methods-design.md §5 bis.
+ *
+ * Sécurité :
+ *   - un ajout reste « en attente » (`confirmedAt` nul) jusqu'au clic sur le
+ *     lien envoyé à l'adresse du compte ; seul le hachage SHA-256 du jeton
+ *     est stocké, effacé à la confirmation ;
+ *   - un moyen en attente n'est jamais copié sur un achat ;
+ *   - rotation des clés `SORTIE_IBAN_KEY_*` : le rechiffrement doit couvrir
+ *     cette table ET `purchaser_payment_methods` avant de retirer une
+ *     ancienne clé.
+ */
+export const userPaymentMethods = sortie.table(
+  "user_payment_methods",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    type: paymentMethodType("type").notNull(),
+    // Même format que purchaser_payment_methods.value_encrypted (AES-256-GCM).
+    valueEncrypted: text("value_encrypted").notNull(),
+    valuePreview: varchar("value_preview", { length: 80 }).notNull(),
+    displayLabel: varchar("display_label", { length: 40 }),
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+    confirmTokenHash: varchar("confirm_token_hash", { length: 64 }),
+    confirmTokenExpiresAt: timestamp("confirm_token_expires_at", { withTimezone: true }),
+    // Empreinte de la session qui a fait l'ajout : la confirmation n'est
+    // acceptée que depuis cette session (cf. account-payment/confirm-token.ts).
+    confirmSessionHash: varchar("confirm_session_hash", { length: 64 }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    userIdx: index("sortie_user_payment_methods_user_idx").on(t.userId),
+  })
+);
+
 // === purchases ===
 
 export const purchases = sortie.table(

@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, X } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import {
   addPaymentMethodAction,
   removePaymentMethodAction,
@@ -12,12 +12,9 @@ import {
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import type { PaymentMethodPreview } from "@/features/sortie/queries/payment-method-queries";
 import {
-  readLastValue,
-  saveLastValue,
+  purgeLegacyPrefill,
   trackPaymentMethodAdded,
-  trackPaymentMethodPrefilled,
 } from "@/features/sortie/lib/payment-method-prefill";
-import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 const TYPE_LABELS: Record<PaymentMethodPreview["type"], string> = {
   iban: "IBAN",
@@ -32,6 +29,12 @@ type Props = {
 };
 
 export function PaymentMethodsManager({ shortId, methods }: Props) {
+  // Plus de pré-remplissage en clair depuis le navigateur : on efface
+  // l'ancien cache au passage.
+  useEffect(() => {
+    purgeLegacyPrefill();
+  }, []);
+
   return (
     <div className="flex flex-col gap-6">
       {methods.length > 0 && (
@@ -58,26 +61,17 @@ export function PaymentMethodsManager({ shortId, methods }: Props) {
 
 function AddMethodForm({ shortId }: { shortId: string }) {
   const [type, setType] = useState<PaymentMethodPreview["type"]>("iban");
-  const [value, setValue] = useState("");
-  const [prefilledValue, setPrefilledValue] = useState<string | null>(null);
 
-  // On ne persiste / ne tape la télémétrie qu'après succès serveur — sinon
-  // on mémoriserait des IBAN invalides ou rate-limités.
+  // Télémétrie seulement après succès serveur (pas d'IBAN invalide ou
+  // rate-limité compté comme ajout).
   const wrappedAction = async (
     prev: FormActionState,
     formData: FormData
   ): Promise<FormActionState> => {
     const submittedType = formData.get("type") as PaymentMethodPreview["type"];
-    const submittedValue = (formData.get("value") as string | null) ?? "";
     const result = await addPaymentMethodAction(prev, formData);
-    const success = !result.errors && !result.message;
-    if (success) {
-      saveLastValue(submittedType, submittedValue);
-      trackPaymentMethodAdded({
-        type: submittedType,
-        wasPrefilled: prefilledValue !== null,
-        valueUnchanged: prefilledValue !== null && prefilledValue === submittedValue,
-      });
+    if (!result.errors && !result.message) {
+      trackPaymentMethodAdded(submittedType);
     }
     return result;
   };
@@ -88,18 +82,6 @@ function AddMethodForm({ shortId }: { shortId: string }) {
   );
   const errors = state.errors ?? {};
 
-  // Synchro depuis localStorage (système externe) à chaque changement de type.
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    const last = readLastValue(type);
-    setPrefilledValue(last);
-    setValue(last ?? "");
-    if (last) {
-      trackPaymentMethodPrefilled(type);
-    }
-  }, [type]);
-  /* eslint-enable react-hooks/set-state-in-effect */
-
   // Placeholders volontairement tronqués (ellipsis "…") pour qu'on ne
   // les confonde pas avec un IBAN/numéro déjà rempli — sinon un user
   // pressé peut croire que le champ est pré-saisi et soumettre la valeur
@@ -107,12 +89,6 @@ function AddMethodForm({ shortId }: { shortId: string }) {
   const valueHint = type === "iban" ? "FR76 1234 5678 …………" : "+33 6 34 56 …";
 
   const valueLabel = type === "iban" ? "IBAN" : "Numéro de téléphone";
-  const isPrefilled = prefilledValue !== null && value === prefilledValue;
-
-  function clearPrefill() {
-    setValue("");
-    setPrefilledValue(null);
-  }
 
   return (
     <form
@@ -141,16 +117,9 @@ function AddMethodForm({ shortId }: { shortId: string }) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between gap-2">
-          <Label htmlFor="pm-value" className="text-[13px] font-medium text-ink-500">
-            {valueLabel}
-          </Label>
-          {isPrefilled && (
-            <Eyebrow tone="acid" glow>
-              ─ pré-rempli
-            </Eyebrow>
-          )}
-        </div>
+        <Label htmlFor="pm-value" className="text-[13px] font-medium text-ink-500">
+          {valueLabel}
+        </Label>
         <Input
           id="pm-value"
           name="value"
@@ -159,32 +128,7 @@ function AddMethodForm({ shortId }: { shortId: string }) {
           placeholder={valueHint}
           autoComplete="off"
           spellCheck={false}
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-            // Dès que l'utilisateur édite, on lève le flag « pré-rempli »
-            // — ce qu'il tape est désormais sa propre saisie, plus une
-            // valeur restaurée du localStorage.
-            if (prefilledValue !== null && e.target.value !== prefilledValue) {
-              setPrefilledValue(null);
-            }
-          }}
         />
-        {isPrefilled && (
-          <div className="flex items-center justify-between gap-2 rounded-md border border-acid-600/30 bg-acid-600/5 px-3 py-2">
-            <p className="text-[12px] text-ink-500">
-              Restauré depuis ta dernière saisie sur ce navigateur.
-            </p>
-            <button
-              type="button"
-              onClick={clearPrefill}
-              className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-hot-600"
-            >
-              <X size={12} strokeWidth={2.4} aria-hidden />
-              effacer
-            </button>
-          </div>
-        )}
         {errors.value?.[0] && <p className="text-xs text-erreur-700">{errors.value[0]}</p>}
       </div>
 

@@ -1,6 +1,7 @@
 import { escapeHtml } from "@/lib/html-escape";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { formatCents } from "@/features/sortie/lib/format";
+import { PAYMENT_TYPE_LABEL } from "@/features/sortie/lib/account-payment/rules";
 import { renderEmail } from "./layout";
 import { BASE_URL } from "./shared";
 
@@ -56,9 +57,9 @@ function ctaButton(href: string, label: string): string {
   return `<a href="${escapeHtml(href)}" style="display:inline-block;padding:14px 26px;background:${INK};color:${ACID};text-decoration:none;border-radius:999px;font-weight:700;font-size:14px;letter-spacing:0.01em;">${escapeHtml(label)}</a>`;
 }
 
-function methodsBlock(methods: PaymentMethodPreview[]): string {
+function methodsBlock(methods: PaymentMethodPreview[], buyerName: string): string {
   if (methods.length === 0) {
-    return `<p style="color:${INK_MUTED};font-size:13px;">Aucun moyen de paiement renseigné pour l&rsquo;instant.</p>`;
+    return `<p style="color:${INK_MUTED};font-size:13px;">${escapeHtml(buyerName)} n&rsquo;a pas encore indiqué comment le rembourser. Ça apparaîtra sur ta page dès que c&rsquo;est fait.</p>`;
   }
   const rows = methods
     .map((m) => {
@@ -69,7 +70,8 @@ function methodsBlock(methods: PaymentMethodPreview[]): string {
       </li>`;
     })
     .join("");
-  return `<ul style="margin:8px 0 0;padding:0;">${rows}</ul>`;
+  return `<ul style="margin:8px 0 0;padding:0;">${rows}</ul>
+    <p style="margin:8px 0 0;color:${INK_MUTED};font-size:13px;">Numéros masqués ici : « Régler ma part » les affiche en entier.</p>`;
 }
 
 /**
@@ -98,7 +100,7 @@ export function purchaseConfirmedEmail(args: {
       Ta part&nbsp;: <strong>${escapeHtml(formatCents(args.amountCents))}</strong>.
     </p>
     <p style="margin:0 0 8px;${MICRO_TAG}">Pour rembourser ${escapeHtml(args.buyerName)}</p>
-    ${methodsBlock(args.methods)}
+    ${methodsBlock(args.methods, args.buyerName)}
     <p style="margin:28px 0;">
       ${ctaButton(args.debtsUrl, "Régler ma part")}
     </p>
@@ -785,6 +787,104 @@ export function bulkSettledEmail(args: {
           ? `${args.initiatorName} a compensé les dettes croisées.`
           : `${args.initiatorName} a soldé le compte, net ${formatCents(Math.abs(net))}.`,
       body,
+    }),
+  };
+}
+
+// === Moyens de paiement du compte ===
+//
+// Ces mails ne reçoivent que l'aperçu masqué (« FR76 **** 1234 ») : la
+// valeur claire n'existe qu'au moment du chiffrement, côté action.
+
+function accountMethodLine(m: {
+  type: PaymentMethodPreview["type"];
+  valuePreview: string;
+  displayLabel?: string | null;
+}): string {
+  const label = m.displayLabel ? ` · ${escapeHtml(m.displayLabel)}` : "";
+  return `<p style="margin:0 0 22px;padding:10px 0;border-top:1px solid ${HAIRLINE};border-bottom:1px solid ${HAIRLINE};">
+      <span style="${MICRO_TAG}">${escapeHtml(PAYMENT_TYPE_LABEL[m.type] ?? m.type)}${label}</span><br />
+      <span style="font-family:ui-monospace,Menlo,monospace;color:${INK};font-size:14px;">${escapeHtml(m.valuePreview)}</span>
+    </p>`;
+}
+
+/**
+ * Envoyé à l'adresse du compte à chaque ajout depuis « Mon argent ». Le
+ * moyen reste en attente (jamais copié sur un achat) tant que ce lien n'a
+ * pas été ouvert dans la session du compte.
+ */
+export function accountMethodConfirmEmail(args: {
+  type: PaymentMethodPreview["type"];
+  valuePreview: string;
+  displayLabel: string | null;
+  confirmUrl: string;
+}): { subject: string; html: string } {
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">Confirme ton moyen de paiement</h1>
+    <p style="margin:0 0 18px;${BODY_P}">
+      Tu viens d&rsquo;ajouter ce moyen de paiement à ton compte Sortie&nbsp;:
+    </p>
+    ${accountMethodLine(args)}
+    <p style="margin:0 0 28px;">
+      ${ctaButton(args.confirmUrl, "Confirmer")}
+    </p>
+    <p style="margin:0 0 10px;font-size:13px;color:${INK_MUTED};line-height:1.6;">
+      Le lien expire dans 15 minutes. Tant qu&rsquo;il n&rsquo;est pas confirmé, ce moyen n&rsquo;est envoyé à personne.
+    </p>
+    <p style="margin:0;font-size:13px;color:${INK_MUTED};line-height:1.6;">
+      Tu n&rsquo;as rien ajouté il y a quelques minutes ? Ne clique pas et change ton mot de passe&nbsp;:
+      quelqu&rsquo;un d&rsquo;autre a peut-être accès à ton compte. Sans clic, rien n&rsquo;est ajouté.
+    </p>
+  `;
+  return {
+    subject: "Confirme ton nouveau moyen de paiement",
+    html: renderEmail({
+      preheader: "Un clic pour confirmer le moyen de paiement ajouté à ton compte.",
+      body,
+      reason: "Tu reçois ce mail parce qu&rsquo;un moyen de paiement a été ajouté à ton compte.",
+    }),
+  };
+}
+
+/**
+ * Notification à l'adresse du compte quand un moyen est confirmé ou retiré
+ * — pour qu'un ajout ou un retrait fait par quelqu'un d'autre se voie.
+ */
+export function accountMethodChangedEmail(args: {
+  change: "confirmed" | "removed";
+  type: PaymentMethodPreview["type"];
+  valuePreview: string;
+  accountUrl: string;
+}): { subject: string; html: string } {
+  const confirmed = args.change === "confirmed";
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">${confirmed ? "Moyen de paiement ajouté" : "Moyen de paiement retiré"}</h1>
+    <p style="margin:0 0 18px;${BODY_P}">
+      ${
+        confirmed
+          ? "Ce moyen de paiement est maintenant sur ton compte. Il sera joint au mail de chacun quand tu déclares un achat&nbsp;:"
+          : "Ce moyen de paiement a été retiré de ton compte. Les sorties déjà achetées gardent l&rsquo;ancien&nbsp;:"
+      }
+    </p>
+    ${accountMethodLine(args)}
+    <p style="margin:0 0 28px;">
+      ${ctaButton(args.accountUrl, "Voir mes moyens de paiement")}
+    </p>
+    <p style="margin:0;font-size:13px;color:${INK_MUTED};line-height:1.6;">
+      Ce n&rsquo;est pas toi ? Change ton mot de passe, puis vérifie tes moyens de paiement&nbsp;:
+      quelqu&rsquo;un d&rsquo;autre a peut-être accès à ton compte.
+    </p>
+  `;
+  return {
+    subject: confirmed
+      ? "Moyen de paiement ajouté à ton compte"
+      : "Moyen de paiement retiré de ton compte",
+    html: renderEmail({
+      preheader: confirmed
+        ? "Un moyen de paiement a été ajouté à ton compte."
+        : "Un moyen de paiement a été retiré de ton compte.",
+      body,
+      reason: "Tu reçois ce mail parce que les moyens de paiement de ton compte ont changé.",
     }),
   };
 }

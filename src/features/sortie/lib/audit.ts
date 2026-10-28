@@ -49,3 +49,17 @@ export const DEBT_AUDIT_ACTION = {
   BULK_DEBTS_SETTLED: "BULK_DEBTS_SETTLED",
   BULK_EMAIL_SEND_FAILED: "BULK_EMAIL_SEND_FAILED",
 } as const;
+
+/**
+ * Moyens de paiement enregistrés sur le compte (spec 2026-10-28 §5 bis).
+ * Payload : `{ methodId, type, valuePreview }` — jamais la valeur claire ;
+ * `outing_id` nul, l'action ne concerne aucune sortie.
+ */
+export const ACCOUNT_PAYMENT_AUDIT_ACTION = {
+  USER_PAYMENT_METHOD_ADDED: "USER_PAYMENT_METHOD_ADDED",
+  USER_PAYMENT_METHOD_CONFIRMED: "USER_PAYMENT_METHOD_CONFIRMED",
+  USER_PAYMENT_METHOD_REMOVED: "USER_PAYMENT_METHOD_REMOVED",
+  // Copie (chiffré tel quel) vers purchaser_payment_methods à la déclaration
+  // d'un achat. Payload : `{ purchaseId, count, types, sourceMethodIds }`.
+  PAYMENT_METHODS_COPIED_FROM_ACCOUNT: "PAYMENT_METHODS_COPIED_FROM_ACCOUNT",
+} as const;

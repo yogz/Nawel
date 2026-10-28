@@ -6,15 +6,19 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { encryptSecret } from "@/lib/crypto";
 import { auditLog, outings, purchaserPaymentMethods, purchases } from "@drizzle/sortie-schema";
-import { sanitizeStrictText } from "@/lib/sanitize";
-import { ibanPreview, isValidIban, normalizeIban, phonePreview } from "@/features/sortie/lib/iban";
+import { ibanPreview, normalizeIban, phonePreview } from "@/features/sortie/lib/iban";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { hashIp } from "@/features/sortie/lib/audit";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
+import {
+  checkOutingMethodAdd,
+  validateMethodLabel,
+  mayEditOutingMethods,
+} from "@/features/sortie/lib/account-payment/rules";
 import type { FormActionState } from "./outing-actions";
-import { shortIdSchema } from "./schemas";
+import { handleValueSchema, ibanValueSchema, shortIdSchema } from "./schemas";
 
 // Valeurs auditLog.action — typo silencieuse possible côté varchar(64),
 // donc on les fige ici.
@@ -27,18 +31,13 @@ const addMethodSchema = z.discriminatedUnion("type", [
   z.object({
     shortId: shortIdSchema,
     type: z.literal("iban"),
-    value: z
-      .string()
-      .trim()
-      .min(14)
-      .max(44)
-      .refine((v) => isValidIban(v), "IBAN invalide"),
+    value: ibanValueSchema,
     displayLabel: z.string().trim().max(100).optional(),
   }),
   z.object({
     shortId: shortIdSchema,
     type: z.enum(["lydia", "revolut", "wero"]),
-    value: z.string().trim().min(4).max(50),
+    value: handleValueSchema,
     displayLabel: z.string().trim().max(100).optional(),
   }),
 ]);
@@ -69,6 +68,11 @@ export async function addPaymentMethodAction(
   if (!me) {
     return { message: "Tu dois répondre à la sortie avant d'ajouter un moyen de paiement." };
   }
+  // Ligne rattachée à un compte (ex. rattachement par e-mail à la connexion,
+  // qui laisse le cookie en place) : le cookie seul ne suffit plus.
+  if (!mayEditOutingMethods({ rowUserId: me.userId, sessionUserId: userId })) {
+    return { message: "Connecte-toi avec ton compte pour modifier tes moyens de paiement." };
+  }
 
   const purchase = await db.query.purchases.findFirst({
     where: eq(purchases.outingId, outing.id),
@@ -91,7 +95,25 @@ export async function addPaymentMethodAction(
   const valueEncrypted = encryptSecret(canonicalValue);
   const valuePreview =
     data.type === "iban" ? ibanPreview(canonicalValue) : phonePreview(canonicalValue);
-  const displayLabel = data.displayLabel ? sanitizeStrictText(data.displayLabel, 100) : null;
+  // Même contrôle que les moyens du compte : ce libellé s'affiche chez les
+  // débiteurs, il ne doit pas pouvoir porter un numéro (cf. rules.ts).
+  const labelCheck = validateMethodLabel(data.displayLabel);
+  if (!labelCheck.ok) {
+    return { errors: { displayLabel: [labelCheck.message] } };
+  }
+  const displayLabel = labelCheck.label;
+
+  const existing = await db
+    .select({
+      type: purchaserPaymentMethods.type,
+      valuePreview: purchaserPaymentMethods.valuePreview,
+    })
+    .from(purchaserPaymentMethods)
+    .where(eq(purchaserPaymentMethods.participantId, me.id));
+  const check = checkOutingMethodAdd({ existing, type: data.type, valuePreview });
+  if (!check.ok) {
+    return { message: check.message };
+  }
 
   const ipHash = await hashIp();
   await db.transaction(async (tx) => {
@@ -145,7 +167,7 @@ export async function removePaymentMethodAction(
   }
 
   const { participant: me, userId } = await getCurrentParticipant(outing.id);
-  if (!me) {
+  if (!me || !mayEditOutingMethods({ rowUserId: me.userId, sessionUserId: userId })) {
     return { message: "Non autorisé." };
   }
 

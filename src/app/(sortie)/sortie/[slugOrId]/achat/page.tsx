@@ -10,7 +10,13 @@ import { NotParticipantNotice } from "@/features/sortie/components/not-participa
 import { displayNameOf } from "@/features/sortie/lib/participant-name";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
 import { mayDeclarePurchase } from "@/features/sortie/lib/already-bought/rules";
-import { PurchaseForm, type AllocationRowView } from "@/features/sortie/components/purchase-form";
+import { mayCopyAccountMethods } from "@/features/sortie/lib/account-payment/rules";
+import { listAccountPaymentMethods } from "@/features/sortie/queries/payment-method-queries";
+import {
+  PurchaseForm,
+  type AccountCopyMethod,
+  type AllocationRowView,
+} from "@/features/sortie/components/purchase-form";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 type Props = {
@@ -128,6 +134,21 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
     .filter((p) => p.id !== me.id && p.userId === null && !p.anonEmail)
     .map((p) => nameByParticipant.get(p.id) ?? "Quelqu'un");
 
+  // Moyens du compte joints à l'achat : même règle que l'action (jamais
+  // d'annonce d'une copie qui ne partirait pas). Aperçus confirmés seulement.
+  let accountMethods: AccountCopyMethod[] | null = null;
+  if (sessionUserId && mayCopyAccountMethods({ sessionUserId, buyerUserId: me.userId })) {
+    const rows = await listAccountPaymentMethods(sessionUserId, new Date());
+    accountMethods = rows
+      .filter((m) => m.confirmedAt !== null)
+      .map((m) => ({
+        id: m.id,
+        type: m.type,
+        valuePreview: m.valuePreview,
+        displayLabel: m.displayLabel,
+      }));
+  }
+
   const normalView = buildView(yesRows);
   const ghostView = buildView(yesRows.filter((r) => r.id !== me.id));
 
@@ -161,6 +182,7 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
         canGhost={ghostView.totalPlaces > 0}
         countedNames={countedNames}
         noEmailNames={noEmailNames}
+        accountMethods={accountMethods}
       />
     </main>
   );

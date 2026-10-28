@@ -1,0 +1,1 @@
+ALTER TABLE "sortie"."user_payment_methods" ADD COLUMN "confirm_session_hash" varchar(64);

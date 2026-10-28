@@ -10,6 +10,7 @@ import { NotParticipantNotice } from "@/features/sortie/components/not-participa
 import { listPaymentMethodsForParticipant } from "@/features/sortie/queries/payment-method-queries";
 import { PaymentMethodsManager } from "@/features/sortie/components/payment-methods-manager";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import { mayEditOutingMethods } from "@/features/sortie/lib/account-payment/rules";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
@@ -49,7 +50,20 @@ export default async function PaymentMethodsPage({ params }: Props) {
     );
   }
 
-  const { outing, me, canonical } = state;
+  const { outing, me, canonical, sessionUserId } = state;
+
+  // Même garde que les actions : une inscription rattachée à un compte ne
+  // se modifie qu'avec la session de ce compte, pas le seul cookie.
+  if (!mayEditOutingMethods({ rowUserId: me.userId, sessionUserId })) {
+    return (
+      <ParticipantAuthGate
+        outingTitle={outing.title}
+        canonical={canonical}
+        prefillEmail={null}
+        subPath="paiement"
+      />
+    );
+  }
 
   const purchase = await db.query.purchases.findFirst({
     where: eq(purchases.outingId, outing.id),
@@ -85,6 +99,18 @@ export default async function PaymentMethodsPage({ params }: Props) {
         <p className="mt-4 text-[15px] leading-[1.5] text-ink-500">
           Renseigne un moyen pour qu&rsquo;on te rembourse facilement. Chiffré au repos, jamais
           affiché en clair dans les listes.
+        </p>
+        <p className="mt-2 text-[13px] leading-[1.5] text-ink-400">
+          Ce que tu ajoutes ici ne vaut que pour cette sortie. Pour ne plus le ressaisir&nbsp;:{" "}
+          <a
+            href="/moi/argent#moyens"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-acid-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+          >
+            Mon argent ↗
+          </a>
+          .
         </p>
       </header>
 
