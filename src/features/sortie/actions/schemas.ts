@@ -227,12 +227,17 @@ export const updateOutingSchema = z
       .transform((v) => (v instanceof Date ? v : undefined)),
     // Toujours coercé à 23:59:59.999 du jour Paris choisi (cf.
     // commentaire identique sur createOutingSchema).
-    rsvpDeadline: z.coerce.date().transform((v) => endOfDayInParis(v)),
+    // Absent pour une sortie « billets déjà pris » (champ masqué) : la
+    // deadline d'origine est conservée côté action.
+    rsvpDeadline: z
+      .union([z.literal(""), z.coerce.date()])
+      .optional()
+      .transform((v) => (v instanceof Date ? endOfDayInParis(v) : undefined)),
     ticketUrl: optionalSafeUrl,
     heroImageUrl: optionalSafeUrl,
     heroImageOgUrl: optionalSafeUrl,
   })
-  .refine((data) => !data.startsAt || data.rsvpDeadline < data.startsAt, {
+  .refine((data) => !data.startsAt || !data.rsvpDeadline || data.rsvpDeadline < data.startsAt, {
     message: "La deadline doit être avant la date de la sortie.",
     path: ["rsvpDeadline"],
   });

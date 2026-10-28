@@ -12,6 +12,7 @@ import {
   outings,
   outingTimeslots,
   participants,
+  purchases,
   timeslotVotes,
 } from "@drizzle/sortie-schema";
 import { generateUniqueShortId, slugifyAscii } from "@/features/sortie/lib/short-id";
@@ -25,7 +26,11 @@ import {
 } from "@/features/sortie/lib/emails/send-outing-emails";
 import { sendNewOutingBroadcast } from "@/features/sortie/lib/emails/follower-broadcast";
 import { runAfterResponse } from "@/features/sortie/lib/after-response";
-import { resolveAlreadyBoughtCreation } from "@/features/sortie/lib/already-bought/rules";
+import {
+  editKeepsDeadline,
+  editNotifiesParticipants,
+  resolveAlreadyBoughtCreation,
+} from "@/features/sortie/lib/already-bought/rules";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { canReopenPoll } from "@/features/sortie/lib/can-reopen-poll";
 import { hashIp, OUTING_AUDIT_ACTION } from "@/features/sortie/lib/audit";
@@ -306,6 +311,11 @@ export async function updateOutingAction(
     return { message: "Tu n'as pas les droits pour modifier cette sortie." };
   }
 
+  // « Billets déjà pris » : la deadline ne bouge jamais (sinon les réponses
+  // se rouvriraient). Sinon, une deadline absente du formulaire = inchangée.
+  const nextDeadline =
+    editKeepsDeadline(outing) || !data.rsvpDeadline ? outing.deadlineAt : data.rsvpDeadline;
+
   const title = sanitizeText(data.title, 200);
   const venue = data.venue ? sanitizeText(data.venue, 200) : null;
   const slug = slugifyAscii(title, 40);
@@ -344,7 +354,7 @@ export async function updateOutingAction(
       heroImageUrl,
       heroImageOgUrl,
       ...(data.startsAt ? { fixedDatetime: data.startsAt } : {}),
-      deadlineAt: data.rsvpDeadline,
+      deadlineAt: nextDeadline,
       slug,
       updatedAt: new Date(),
       // Bump SEQUENCE : un changement de titre / date / lieu doit forcer
@@ -379,12 +389,23 @@ export async function updateOutingAction(
       // valeur DB existante au diff pour qu'aucun email "date
       // modifiée" parte alors qu'on n'y a pas touché.
       fixedDatetime: data.startsAt ?? outing.fixedDatetime,
-      deadlineAt: data.rsvpDeadline,
+      deadlineAt: nextDeadline,
       eventLink: ticketUrl,
       heroImageUrl,
     }
   );
-  if (diff.length > 0) {
+  // Sortie « billets déjà pris » avant l'achat : pas d'e-mail « modifiée »
+  // aux participants ajoutés (leur seul e-mail sera celui de l'achat).
+  const hasPurchase = outing.alreadyBought
+    ? (await db.query.purchases.findFirst({
+        where: eq(purchases.outingId, outing.id),
+        columns: { id: true },
+      })) !== undefined
+    : false;
+  if (
+    diff.length > 0 &&
+    editNotifiesParticipants({ alreadyBought: outing.alreadyBought, hasPurchase })
+  ) {
     await sendOutingModifiedEmails({
       outing: {
         id: outing.id,

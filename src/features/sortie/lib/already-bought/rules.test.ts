@@ -1,5 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { acceptsResponses, resolveAlreadyBoughtCreation } from "./rules";
+import {
+  acceptsResponses,
+  editKeepsDeadline,
+  editNotifiesParticipants,
+  resolveAlreadyBoughtCreation,
+} from "./rules";
+
+describe("modification d'une sortie « billets déjà pris »", () => {
+  it("garde la date limite d'origine (pas de réouverture des réponses)", () => {
+    expect(editKeepsDeadline({ alreadyBought: true })).toBe(true);
+    expect(editKeepsDeadline({ alreadyBought: false })).toBe(false);
+  });
+
+  it("ne prévient pas les participants tant que l'achat n'est pas déclaré", () => {
+    expect(editNotifiesParticipants({ alreadyBought: true, hasPurchase: false })).toBe(false);
+    expect(editNotifiesParticipants({ alreadyBought: true, hasPurchase: true })).toBe(true);
+    expect(editNotifiesParticipants({ alreadyBought: false, hasPurchase: false })).toBe(true);
+  });
+});
 
 const NOW = new Date("2026-10-28T10:00:00.000Z");
 const FUTURE = new Date("2026-11-25T18:00:00.000Z");

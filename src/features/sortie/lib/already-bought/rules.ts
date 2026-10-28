@@ -51,3 +51,20 @@ export function acceptsResponses(
   }
   return !(o.deadlineAt < now && o.status !== "open");
 }
+
+/** Modifier une sortie « billets déjà pris » ne touche pas à sa deadline (réponses jamais rouvertes). */
+export function editKeepsDeadline(o: { alreadyBought: boolean }): boolean {
+  return o.alreadyBought;
+}
+
+/**
+ * E-mail « sortie modifiée » : pas avant l'achat pour une sortie « billets
+ * déjà pris » — les participants ajoutés ne doivent recevoir qu'un e-mail,
+ * celui de l'achat avec leur part.
+ */
+export function editNotifiesParticipants(o: {
+  alreadyBought: boolean;
+  hasPurchase: boolean;
+}): boolean {
+  return !o.alreadyBought || o.hasPurchase;
+}

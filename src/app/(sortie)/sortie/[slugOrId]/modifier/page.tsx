@@ -85,6 +85,7 @@ export default async function EditOutingPage({ params }: Props) {
         ticketUrl={outing.eventLink}
         heroImageUrl={outing.heroImageUrl}
         vibe={outing.vibe}
+        alreadyBought={outing.alreadyBought}
       />
 
       {outing.status !== "cancelled" && !isPastEvent && (
