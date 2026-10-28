@@ -8,7 +8,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { encryptSecret } from "@/lib/crypto";
 import { auditLog, userPaymentMethods } from "@drizzle/sortie-schema";
-import { ibanPreview, normalizeIban, phonePreview } from "@/features/sortie/lib/iban";
+import { canonicalPaymentValue } from "@/features/sortie/lib/payment-value";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { ACCOUNT_PAYMENT_AUDIT_ACTION, hashIp } from "@/features/sortie/lib/audit";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
@@ -26,7 +26,7 @@ import {
   sendAccountMethodChangedEmail,
   sendAccountMethodConfirmEmail,
 } from "@/features/sortie/lib/emails/send-account-payment-emails";
-import { handleValueSchema, ibanValueSchema } from "./schemas";
+import { handleValueSchema, ibanValueSchema, revolutValueSchema } from "./schemas";
 
 /**
  * Moyens de paiement enregistrés sur le compte, gérés depuis « Mon argent ».
@@ -52,7 +52,12 @@ const addAccountMethodSchema = z.discriminatedUnion("type", [
     displayLabel: z.string().max(200).optional(),
   }),
   z.object({
-    type: z.enum(["lydia", "revolut", "wero"]),
+    type: z.literal("revolut"),
+    value: revolutValueSchema,
+    displayLabel: z.string().max(200).optional(),
+  }),
+  z.object({
+    type: z.enum(["lydia", "wero"]),
     value: handleValueSchema,
     displayLabel: z.string().max(200).optional(),
   }),
@@ -116,9 +121,11 @@ export async function addAccountPaymentMethodAction(
     return { message: gate.message };
   }
 
-  const canonicalValue = data.type === "iban" ? normalizeIban(data.value) : data.value.trim();
-  const valuePreview =
-    data.type === "iban" ? ibanPreview(canonicalValue) : phonePreview(canonicalValue);
+  const value = canonicalPaymentValue(data.type, data.value);
+  if (!value.ok) {
+    return { errors: { value: [value.message] } };
+  }
+  const valuePreview = value.preview;
 
   const now = new Date();
   // Les ajouts jamais confirmés dont le lien a expiré ne servent plus à
@@ -148,7 +155,7 @@ export async function addAccountPaymentMethodAction(
     return { message: check.message };
   }
 
-  const valueEncrypted = encryptSecret(canonicalValue);
+  const valueEncrypted = encryptSecret(value.canonical);
   const { token, tokenHash, expiresAt } = newConfirmToken(now);
   const ipHash = await hashIp();
 

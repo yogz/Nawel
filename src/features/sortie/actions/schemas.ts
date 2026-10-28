@@ -20,6 +20,9 @@ export const ibanValueSchema = z
   .max(44)
   .refine((v) => isValidIban(v), "IBAN invalide");
 export const handleValueSchema = z.string().trim().min(4).max(50);
+// Revolut accepte aussi un lien revolut.me ou la phrase de partage Revolut
+// (~90 caractères) : seul le pseudo extrait est stocké (cf. lib/revolut.ts).
+export const revolutValueSchema = z.string().trim().min(3).max(200);
 
 // z.string().url() accepts javascript: — refine to http/https so a malicious
 // creator can't turn the "Voir la billetterie" link into an XSS payload.

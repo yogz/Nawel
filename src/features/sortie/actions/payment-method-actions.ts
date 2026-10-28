@@ -6,7 +6,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { encryptSecret } from "@/lib/crypto";
 import { auditLog, outings, purchaserPaymentMethods, purchases } from "@drizzle/sortie-schema";
-import { ibanPreview, normalizeIban, phonePreview } from "@/features/sortie/lib/iban";
+import { canonicalPaymentValue } from "@/features/sortie/lib/payment-value";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { hashIp } from "@/features/sortie/lib/audit";
@@ -18,7 +18,7 @@ import {
   mayEditOutingMethods,
 } from "@/features/sortie/lib/account-payment/rules";
 import type { FormActionState } from "./outing-actions";
-import { handleValueSchema, ibanValueSchema, shortIdSchema } from "./schemas";
+import { handleValueSchema, ibanValueSchema, revolutValueSchema, shortIdSchema } from "./schemas";
 
 // Valeurs auditLog.action — typo silencieuse possible côté varchar(64),
 // donc on les fige ici.
@@ -36,7 +36,13 @@ const addMethodSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     shortId: shortIdSchema,
-    type: z.enum(["lydia", "revolut", "wero"]),
+    type: z.literal("revolut"),
+    value: revolutValueSchema,
+    displayLabel: z.string().trim().max(100).optional(),
+  }),
+  z.object({
+    shortId: shortIdSchema,
+    type: z.enum(["lydia", "wero"]),
     value: handleValueSchema,
     displayLabel: z.string().trim().max(100).optional(),
   }),
@@ -91,10 +97,12 @@ export async function addPaymentMethodAction(
     return { message: gate.message };
   }
 
-  const canonicalValue = data.type === "iban" ? normalizeIban(data.value) : data.value.trim();
-  const valueEncrypted = encryptSecret(canonicalValue);
-  const valuePreview =
-    data.type === "iban" ? ibanPreview(canonicalValue) : phonePreview(canonicalValue);
+  const value = canonicalPaymentValue(data.type, data.value);
+  if (!value.ok) {
+    return { errors: { value: [value.message] } };
+  }
+  const valueEncrypted = encryptSecret(value.canonical);
+  const valuePreview = value.preview;
   // Même contrôle que les moyens du compte : ce libellé s'affiche chez les
   // débiteurs, il ne doit pas pouvoir porter un numéro (cf. rules.ts).
   const labelCheck = validateMethodLabel(data.displayLabel);
