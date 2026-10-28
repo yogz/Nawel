@@ -36,7 +36,6 @@ export type ProfileOuting = ProfileOutingRow & { isOwn: boolean };
  * ni lien, ni compteur.
  */
 export type ShowcaseOuting = {
-  id: string;
   title: string;
   location: string | null;
   heroImageUrl: string | null;
@@ -59,7 +58,7 @@ export function splitProfileOutings(
 }
 
 export function toShowcaseOuting(o: ProfileOuting): ShowcaseOuting {
-  return { id: o.id, title: o.title, location: o.location, heroImageUrl: o.heroImageUrl };
+  return { title: o.title, location: o.location, heroImageUrl: o.heroImageUrl };
 }
 
 export function organizerLabel(o: ProfileOuting): string | null {

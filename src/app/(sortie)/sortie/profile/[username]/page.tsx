@@ -254,8 +254,8 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
 
       {/* Header compact unifié sur les 2 modes (vitrine + lien privé) :
           la version "hero plein" 88px + text-5xl mangeait ~40% du 1er
-          viewport sur la vitrine publique alors que le visiteur cherche
-          la prochaine sortie, pas la photo de Nicolas en plein écran.
+          viewport sur la vitrine publique alors que le visiteur vient voir
+          les sorties, pas la photo de Nicolas en plein écran.
           Avatar 56px + h1 3xl/4xl libère ~150px de fold = 1 card de plus
           visible au scroll initial. L'eyebrow @username reste — c'est le
           handle système, complémentaire du display name. */}
@@ -326,7 +326,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           )}
           {othersUpcoming.length > 0 && (
             <ShowcaseSection
-              title={`${row.name.split(" ")[0]} y va aussi`}
+              title={`${row.name.trim().split(" ")[0] || row.username} y va aussi`}
               outings={othersUpcoming}
               inboxMode
             />
@@ -487,7 +487,7 @@ type ParticipantRow =
   Awaited<ReturnType<typeof listMyParticipantsForOutings>> extends Map<string, infer V> ? V : never;
 
 /**
- * Mode lien-privé uniquement : la liste des sorties à venir est groupée
+ * Mode lien-privé uniquement : ses propres sorties à venir sont groupées
  * par état d'action côté invité (à toi de jouer / tu viens / en attente
  * / tu viens pas) plutôt que chronologique. Transforme la page en
  * checklist au lieu d'un agenda.
@@ -519,8 +519,6 @@ function InboxSection({
           outings={flattenInboxByPriority(buckets)}
           myRsvpByOuting={myRsvpByOuting}
           loggedInName={loggedInName}
-          showRsvp
-          isPast={false}
         />
       </section>
     );
@@ -565,8 +563,6 @@ function InboxBucketSection({
         outings={bucket.outings}
         myRsvpByOuting={myRsvpByOuting}
         loggedInName={loggedInName}
-        showRsvp
-        isPast={false}
       />
     </section>
   );
@@ -576,14 +572,10 @@ function RsvpCardList({
   outings,
   myRsvpByOuting,
   loggedInName,
-  showRsvp,
-  isPast,
 }: {
   outings: OutingRow[];
   myRsvpByOuting: Map<string, ParticipantRow>;
   loggedInName: string | null;
-  showRsvp: boolean;
-  isPast: boolean;
 }) {
   return (
     <ul className="flex flex-col gap-4">
@@ -591,11 +583,11 @@ function RsvpCardList({
         <li key={o.id}>
           <OutingProfileCard
             outing={o}
-            showRsvp={showRsvp}
+            showRsvp
             myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
             loggedInName={loggedInName}
             outingBaseUrl={PUBLIC_BASE}
-            isPast={isPast}
+            isPast={false}
           />
         </li>
       ))}

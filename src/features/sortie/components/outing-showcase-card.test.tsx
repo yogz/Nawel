@@ -5,7 +5,6 @@ import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { OutingShowcaseCard } from "./outing-showcase-card";
 
 const outing = {
-  id: "o1",
   title: "Pilote | Sitcom improvisée",
   location: "Le Métropole",
   heroImageUrl: "https://example.com/poster.jpg",

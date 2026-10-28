@@ -66,12 +66,7 @@ describe("splitProfileOutings", () => {
 describe("toShowcaseOuting", () => {
   it("ne garde que l'image, le titre et la salle", () => {
     const [o] = splitProfileOutings([row()], "u1", NOW).upcoming;
-    expect(Object.keys(toShowcaseOuting(o)).sort()).toEqual([
-      "heroImageUrl",
-      "id",
-      "location",
-      "title",
-    ]);
+    expect(Object.keys(toShowcaseOuting(o)).sort()).toEqual(["heroImageUrl", "location", "title"]);
   });
 });
 
