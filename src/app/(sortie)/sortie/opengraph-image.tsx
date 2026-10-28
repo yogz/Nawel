@@ -7,7 +7,7 @@ import { WaxSeal } from "@/features/sortie/components/brand/wax-seal";
 //
 // Same Acid Cabinet palette as the in-app theme. Static (no DB fetch),
 // long revalidate — this asset only moves when the brand moves.
-export const alt = "Sortie — entre amis, ça s'organise";
+export const alt = "Sortie · entre amis, ça s'organise";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

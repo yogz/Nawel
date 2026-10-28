@@ -63,7 +63,6 @@ describe("j7ReminderEmail", () => {
 });
 
 describe("rappels", () => {
-  // Le slogan du pied de page, commun à tous les mails, n'est pas couvert.
   it("n'utilisent ni deux-points ni tiret cadratin dans leur texte", () => {
     const emails = [
       j7ReminderEmail(OUTING),
@@ -72,8 +71,8 @@ describe("rappels", () => {
       j1ReminderEmail(OUTING, tickOn("2026-11-21")),
     ];
     for (const { subject, html } of emails) {
-      const content = html.slice(html.indexOf("<h1"), html.indexOf("Voir la sortie"));
-      const visibleText = content.replace(/<[^>]+>/g, " ");
+      // Tout le texte visible, pied de page compris (pas les styles inline).
+      const visibleText = html.slice(html.indexOf("<body")).replace(/<[^>]+>/g, " ");
       for (const text of [subject, preheader(html), visibleText]) {
         expect(text).not.toMatch(/—|&mdash;| :/);
       }

@@ -71,7 +71,7 @@ export function renderEmail({
       ${body}
       <hr style="margin:36px 0 18px;border:0;border-top:1px solid rgba(10,10,10,0.08);" />
       <p style="margin:0;font-size:12px;line-height:1.6;color:#7A7368;">
-        Sortie — entre amis, ça s&rsquo;organise.<br />
+        Sortie · entre amis, ça s&rsquo;organise.<br />
         ${reason}
       </p>
     </div>
