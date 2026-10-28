@@ -30,7 +30,8 @@ const BODY_P = `color:${INK_BODY};line-height:1.6;font-size:15px;`;
 const MICRO_TAG = `font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:${HOT};`;
 
 const FOOTER_P = `font-size:13px;color:${INK_MUTED};line-height:1.6;`;
-const CALENDAR_FEED_URL = `${BASE_URL}/sortie/moi`;
+// Chemin public sur le host Sortie (le proxy ajoute `/sortie` en interne).
+const CALENDAR_FEED_URL = `${BASE_URL}/moi`;
 
 /**
  * Pitch discret pour les destinataires anonymes (pas de compte) : un lien
@@ -41,15 +42,22 @@ const CALENDAR_FEED_URL = `${BASE_URL}/sortie/moi`;
  * Retourne string vide quand `show === false` — composable directement
  * dans le body des templates.
  */
-function calendarFeedPitchBlock(show: boolean): string {
+function calendarFeedPitchBlock(
+  show: boolean,
+  copy: { lead: string; link: string; tail: string } = {
+    lead: "Marre de cliquer sur un .ics à chaque mail ?",
+    link: "Sortie peut alimenter ton agenda tout seul.",
+    tail: "",
+  }
+): string {
   if (!show) {
     return "";
   }
   return `
     <hr style="margin:32px 0 18px;border:0;border-top:1px solid ${HAIRLINE};" />
     <p style="margin:0;${FOOTER_P}">
-      Marre de cliquer sur un .ics à chaque mail ?
-      <a href="${escapeHtml(CALENDAR_FEED_URL)}" style="color:${INK_MUTED};text-decoration:underline;">Sortie peut alimenter ton agenda tout seul.</a>
+      ${escapeHtml(copy.lead)}
+      <a href="${escapeHtml(CALENDAR_FEED_URL)}" style="color:${INK_MUTED};text-decoration:underline;">${escapeHtml(copy.link)}</a>${escapeHtml(copy.tail)}
     </p>
   `;
 }
@@ -473,6 +481,36 @@ type ReminderArgs = {
   location: string | null;
 };
 
+// Le J-7 est le moment où l'on bloque sa date : c'est le seul rappel qui
+// propose le flux agenda, et seulement à qui ne l'a pas encore. Sans
+// compte, le lien mène à « Connexion requise » : la copy l'annonce. Les
+// RSVP anonymes sont rattachés au compte à la connexion (même email).
+const J7_CALENDAR_PITCH = {
+  account: {
+    lead: "Tu veux toutes tes sorties dans ton agenda ?",
+    link: "Ajoute le calendrier Sortie",
+    tail: ", il se met à jour tout seul.",
+  },
+  anonymous: {
+    lead: "Tu veux toutes tes sorties dans ton agenda ?",
+    link: "Connecte-toi avec ton email et ajoute le calendrier Sortie",
+    tail: ", il se met à jour tout seul.",
+  },
+};
+
+export type CalendarFeedPitch = keyof typeof J7_CALENDAR_PITCH | null;
+
+/** Pas de compte → "anonymous" ; compte sans lien d'agenda → "account". */
+export function calendarPitchFor(recipient: {
+  userId: string | null;
+  user: { calendarToken: string | null } | null;
+}): CalendarFeedPitch {
+  if (recipient.userId === null) {
+    return "anonymous";
+  }
+  return recipient.user?.calendarToken ? null : "account";
+}
+
 function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
@@ -487,6 +525,7 @@ function reminderEmail(
     closing: string;
     /** Inbox preview line: the full date a week out, just the time up close. */
     preview: "date" | "time";
+    calendarPitch?: CalendarFeedPitch;
   }
 ): { subject: string; html: string } {
   const title = escapeHtml(args.outingTitle);
@@ -510,6 +549,7 @@ function reminderEmail(
     <p style="margin:0;">
       ${ctaButton(args.outingUrl, "Voir la sortie")}
     </p>
+    ${copy.calendarPitch ? calendarFeedPitchBlock(true, J7_CALENDAR_PITCH[copy.calendarPitch]) : ""}
   `;
   return {
     subject: `${copy.lead} · ${args.outingTitle}`,
@@ -556,12 +596,18 @@ export function j1ReminderEmail(
  * Fired once per outing by the sweeper on the Paris calendar day 7 days
  * before fixedDatetime. Simple heads-up to keep the date free — no action
  * asked. Idempotency via reminder_j7_sent_at, same stamp-first rule as J-1.
+ * `calendarPitch` : "anonymous" (pas de compte), "account" (compte sans
+ * calendarToken) ou null (agenda déjà branché).
  */
-export function j7ReminderEmail(args: ReminderArgs): { subject: string; html: string } {
+export function j7ReminderEmail(args: ReminderArgs & { calendarPitch?: CalendarFeedPitch }): {
+  subject: string;
+  html: string;
+} {
   return reminderEmail(args, {
     lead: "Dans une semaine",
     closing: "Pense à bloquer la date.",
     preview: "date",
+    calendarPitch: args.calendarPitch ?? null,
   });
 }
 

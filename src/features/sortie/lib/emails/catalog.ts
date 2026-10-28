@@ -160,6 +160,7 @@ export const EMAIL_CATALOG: EmailCatalogEntry[] = [
         outingUrl: MOCK_OUTING_URL,
         fixedDatetime: MOCK_OUTING_DATE,
         location: "Chez Léa, 12 rue Oberkampf",
+        calendarPitch: "anonymous",
       }),
   },
   {

@@ -11,6 +11,7 @@ import {
 } from "@/features/sortie/lib/build-event-ics";
 import { BASE_URL, outingPath, safeSend } from "./shared";
 import {
+  calendarPitchFor,
   j1ReminderEmail,
   j7ReminderEmail,
   outingCancelledEmail,
@@ -401,7 +402,7 @@ export async function sendReminderEmails(args: {
       ne(participants.response, "no"),
       ne(participants.response, "interested")
     ),
-    with: { user: { columns: { email: true } } },
+    with: { user: { columns: { email: true, calendarToken: true } } },
   });
 
   const canonical = outingPath(args.outing.slug, args.outing.shortId);
@@ -411,14 +412,19 @@ export async function sendReminderEmails(args: {
     fixedDatetime: args.outing.fixedDatetime,
     location: args.outing.location,
   };
-  const { subject, html } =
-    args.kind === "j1" ? j1ReminderEmail(reminderArgs, args.now) : j7ReminderEmail(reminderArgs);
 
   await Promise.all(
-    recipients
-      .map((p) => p.anonEmail ?? p.user?.email ?? null)
-      .filter((e): e is string => !!e)
-      .map((email) => safeSend({ to: email, subject, html, trigger: `${args.kind}-reminder` }))
+    recipients.map(async (p) => {
+      const email = p.anonEmail ?? p.user?.email ?? null;
+      if (!email) {
+        return;
+      }
+      const { subject, html } =
+        args.kind === "j1"
+          ? j1ReminderEmail(reminderArgs, args.now)
+          : j7ReminderEmail({ ...reminderArgs, calendarPitch: calendarPitchFor(p) });
+      await safeSend({ to: email, subject, html, trigger: `${args.kind}-reminder` });
+    })
   );
 }
 
