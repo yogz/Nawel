@@ -7,7 +7,7 @@ const monthFormatter = new Intl.DateTimeFormat("fr-FR", { month: "long", timeZon
 const monthShortFormatter = new Intl.DateTimeFormat("fr-FR", { month: "short", timeZone: TZ });
 const weekdayFormatter = new Intl.DateTimeFormat("fr-FR", { weekday: "short", timeZone: TZ });
 const timeFormatter = new Intl.DateTimeFormat("fr-FR", {
-  hour: "2-digit",
+  hour: "numeric",
   minute: "2-digit",
   timeZone: TZ,
 });

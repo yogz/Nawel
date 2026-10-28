@@ -30,7 +30,7 @@ function formatTicketDate(date: Date | null): string {
   if (!date) {
     return "Bientôt";
   }
-  return `${date.getDate()} ${MONTH_FR[date.getMonth()] ?? ""} · ${String(date.getHours()).padStart(2, "0")}h${String(date.getMinutes()).padStart(2, "0")}`;
+  return `${date.getDate()} ${MONTH_FR[date.getMonth()] ?? ""} · ${date.getHours()}h${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
 /**

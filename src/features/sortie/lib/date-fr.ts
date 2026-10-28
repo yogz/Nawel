@@ -77,8 +77,9 @@ const dayMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
   timeZone: TZ,
 });
 
+// "7h30", pas "07h30" : l'usage français n'écrit pas le zéro de l'heure.
 const timeFormatter = new Intl.DateTimeFormat("fr-FR", {
-  hour: "2-digit",
+  hour: "numeric",
   minute: "2-digit",
   timeZone: TZ,
 });

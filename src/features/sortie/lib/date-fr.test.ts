@@ -3,6 +3,7 @@ import {
   formatOutingDate,
   formatOutingDateConversational,
   formatOutingDateShort,
+  formatTimeOnly,
   parisCalendarDaysBetween,
 } from "./date-fr";
 
@@ -35,6 +36,12 @@ describe("date-fr formatters", () => {
 
   it("formatOutingDateConversational ajoute l'année quand différente", () => {
     expect(formatOutingDateConversational(SAMPLE, NOW_NEXT_YEAR)).toBe("12 décembre 2026 à 20h30");
+  });
+
+  it("n'écrit pas le zéro devant une heure du matin", () => {
+    const morning = new Date("2026-12-12T07:30:00+01:00");
+    expect(formatOutingDate(morning, NOW_SAME_YEAR)).toBe("samedi 12 décembre · 7h30");
+    expect(formatTimeOnly(morning)).toBe("7h30");
   });
 });
 
