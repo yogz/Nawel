@@ -9,6 +9,12 @@ import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
  *   - TICKET namespace (`SORTIE_TICKET_KEY_*`): event ticket files (binary).
  *     Ciphertext lives on Vercel Blob; iv/tag/keyId are stored as separate
  *     columns next to the blob URL.
+ *
+ * Rotation IBAN : `decryptSecret` retrouve la clé par le `keyId` du chiffré.
+ * Avant de retirer une ancienne clé `SORTIE_IBAN_KEY_*`, rechiffrer les DEUX
+ * tables qui l'utilisent : `sortie.purchaser_payment_methods` et
+ * `sortie.user_payment_methods` (copiées l'une vers l'autre sans
+ * déchiffrer — une ligne copiée garde le `keyId` de son origine).
  */
 
 const IV_BYTES = 12;
