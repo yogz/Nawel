@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   checkAccountMethodAdd,
+  checkOutingMethodAdd,
   isDuplicateMethod,
   mayCopyAccountMethods,
   mayEditOutingMethods,
@@ -187,5 +188,28 @@ describe("selectMethodsToCopy", () => {
 
   it("ne duplique pas un id coché deux fois", () => {
     expect(selectMethodsToCopy({ checkedIds: ["a", "a"], accountMethods })).toEqual(["a"]);
+  });
+});
+
+describe("checkOutingMethodAdd (par sortie)", () => {
+  const existing = [{ type: "iban", valuePreview: "FR76 **** 1234" }];
+
+  it("refuse un doublon pour cette sortie", () => {
+    expect(
+      checkOutingMethodAdd({ existing, type: "iban", valuePreview: "FR76 **** 1234" })
+    ).toEqual({ ok: false, message: "Déjà ajouté pour cette sortie." });
+  });
+
+  it("accepte un autre moyen, sans plafond de compte", () => {
+    expect(
+      checkOutingMethodAdd({ existing, type: "iban", valuePreview: "FR76 **** 9999" })
+    ).toEqual({ ok: true });
+    const many = ["1", "2", "3", "4", "5", "6"].map((t) => ({
+      type: "lydia",
+      valuePreview: `** ** ** 0${t}`,
+    }));
+    expect(
+      checkOutingMethodAdd({ existing: many, type: "lydia", valuePreview: "** ** ** 07" })
+    ).toEqual({ ok: true });
   });
 });

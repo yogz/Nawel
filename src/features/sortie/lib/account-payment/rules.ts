@@ -90,6 +90,18 @@ export function isDuplicateMethod(
   return existing.some((m) => m.type === type && m.valuePreview === valuePreview);
 }
 
+/** Ajout par sortie : seul le doublon est refusé (pas de plafond). */
+export function checkOutingMethodAdd(a: {
+  existing: { type: string; valuePreview: string }[];
+  type: string;
+  valuePreview: string;
+}): Result {
+  if (isDuplicateMethod(a.existing, a.type, a.valuePreview)) {
+    return { ok: false, message: "Déjà ajouté pour cette sortie." };
+  }
+  return { ok: true };
+}
+
 /** Fin visible de l'aperçu (« 1234 » pour un IBAN, « 42 » pour un numéro). */
 function previewTail(valuePreview: string): string {
   return valuePreview.match(/[0-9A-Za-z]+$/)?.[0] ?? valuePreview;
