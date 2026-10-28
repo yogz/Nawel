@@ -11,7 +11,7 @@ const DATE_FMT = new Intl.DateTimeFormat("fr-FR", {
   day: "numeric",
   month: "short",
   year: "numeric",
-  hour: "2-digit",
+  hour: "numeric",
   minute: "2-digit",
   timeZone: "Europe/Paris",
 });

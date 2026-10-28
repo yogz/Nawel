@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
     console.info("[sortie-sweeper] end", {
       durationMs,
       closedRsvps: report.closedRsvps,
+      j7Reminders: report.j7Reminders,
       j1Reminders: report.j1Reminders,
       markedPast: report.markedPast,
       errors: report.errors.length,

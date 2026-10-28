@@ -6,8 +6,8 @@
  * Idempotency guarantees:
  *   - `open → awaiting_purchase` is driven by a WHERE clause that won't
  *     match a second time (status check).
- *   - J-1 reminder writes `reminder_j1_sent_at` *before* sending, so a
- *     mid-batch crash never re-emails the same outing.
+ *   - J-7 / J-1 reminders write `reminder_j7_sent_at` / `reminder_j1_sent_at`
+ *     *before* sending, so a mid-batch crash never re-emails the same outing.
  *   - `awaiting_purchase → past` is also status-guarded.
  *
  * Emails sent here are best-effort — one bad recipient shouldn't stop the
@@ -23,8 +23,9 @@ import { outings, outingTimeslots, purchases, sweeperRuns, tickets } from "@driz
 import { logger } from "@/lib/logger";
 import { isOurBlobUrl } from "@/features/sortie/lib/blob-cleanup";
 import { TICKET_PATH_PREFIX } from "@/features/sortie/lib/ticket-upload";
+import { parisCalendarDaysBetween } from "@/features/sortie/lib/date-fr";
 import {
-  sendJ1ReminderEmails,
+  sendReminderEmails,
   sendRsvpClosedEmails,
 } from "@/features/sortie/lib/emails/send-outing-emails";
 
@@ -41,6 +42,7 @@ const TICKET_CLEANUP_LOCK_SCOPE = "sortie:ticket-cleanup";
 
 export type SweeperReport = {
   closedRsvps: number;
+  j7Reminders: number;
   j1Reminders: number;
   markedPast: number;
   ticketsCleanedUp: number;
@@ -52,6 +54,70 @@ export type SweeperReport = {
 };
 
 const TICKET_RETENTION_DAYS = 30;
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const REMINDER_STAMP = {
+  j1: outings.reminderJ1SentAt,
+  j7: outings.reminderJ7SentAt,
+} as const;
+
+/**
+ * Phase 2 du sweeper — envoie un rappel aux sorties datées dont
+ * `fixedDatetime` tombe dans [from, to] et passe `isDue`, puis renvoie le
+ * nombre de sorties notifiées.
+ */
+async function sendDueReminders(
+  kind: "j1" | "j7",
+  now: Date,
+  opts: { from: Date; to: Date; isDue: (fixedDatetime: Date) => boolean; errors: string[] }
+): Promise<number> {
+  const stampColumn = REMINDER_STAMP[kind];
+  const candidates = await db.query.outings.findMany({
+    where: and(
+      isNull(stampColumn),
+      sql`${outings.status} in ('open','awaiting_purchase','purchased')`,
+      sql`${outings.fixedDatetime} is not null`,
+      sql`${outings.fixedDatetime} >= ${opts.from.toISOString()}`,
+      sql`${outings.fixedDatetime} <= ${opts.to.toISOString()}`
+    ),
+    columns: {
+      id: true,
+      title: true,
+      slug: true,
+      shortId: true,
+      fixedDatetime: true,
+      location: true,
+    },
+    limit: SWEEPER_BATCH_LIMIT,
+  });
+
+  let sent = 0;
+  for (const outing of candidates) {
+    const fixedDatetime = outing.fixedDatetime;
+    if (fixedDatetime === null || !opts.isDue(fixedDatetime)) {
+      continue;
+    }
+    // Stamp FIRST so a crash mid-email can't re-fire next tick. The cost of
+    // a stamped-but-unsent reminder is one missed reminder; the cost of an
+    // un-stamped double-send is annoying users. We'd rather miss than spam.
+    const stamped = await db
+      .update(outings)
+      .set(kind === "j1" ? { reminderJ1SentAt: now } : { reminderJ7SentAt: now })
+      .where(and(eq(outings.id, outing.id), isNull(stampColumn)))
+      .returning({ id: outings.id });
+    if (stamped.length === 0) {
+      continue;
+    }
+    try {
+      await sendReminderEmails({ kind, outing: { ...outing, fixedDatetime }, now });
+      sent += 1;
+    } catch (err) {
+      opts.errors.push(`${kind}:${outing.shortId}:${(err as Error).message}`);
+    }
+  }
+  return sent;
+}
 
 /**
  * Runs the full sweep. Accepts a clock-override for tests — prod calls it
@@ -65,6 +131,7 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
   const startedAtDate = new Date(startedAtMs);
   const report: SweeperReport = {
     closedRsvps: 0,
+    j7Reminders: 0,
     j1Reminders: 0,
     markedPast: 0,
     ticketsCleanedUp: 0,
@@ -117,62 +184,31 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
     }
   }
 
-  // --- 2. J-1 reminders for outings happening in the next ~48h. -------------
+  // --- 2a. J-7 reminders, on the Paris day exactly a week before. ----------
+  // One tick per day means exactly one tick lands on "J-7" in Paris. The
+  // [6d, 8d] SQL window is just a cheap prefilter; the calendar check picks
+  // the right day. Outings dated less than a week out never get a J-7 —
+  // the J-1 covers them. A missed tick means a missed J-7, by design.
+  report.j7Reminders = await sendDueReminders("j7", now, {
+    from: new Date(now.getTime() + 6 * DAY_MS),
+    to: new Date(now.getTime() + 8 * DAY_MS),
+    isDue: (fixedDatetime) => parisCalendarDaysBetween(now, fixedDatetime) === 7,
+    errors: report.errors,
+  });
+
+  // --- 2b. J-1 reminders for outings happening in the next ~48h. ------------
   // Vercel Hobby caps crons at daily, so the tick fires once every 24h. We
   // widen the window to [now, now+48h] so that whichever morning tick first
   // sees an outing within 2 days sends the reminder; the stamp then prevents
   // a second send the next morning. Net effect: confirmed attendees get a
-  // heads-up 24h–48h before their event, never after.
-  const reminderLo = now;
-  const reminderHi = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-
-  const reminding = await db.query.outings.findMany({
-    where: and(
-      isNull(outings.reminderJ1SentAt),
-      sql`${outings.status} in ('open','awaiting_purchase','purchased')`,
-      sql`${outings.fixedDatetime} is not null`,
-      sql`${outings.fixedDatetime} >= ${reminderLo.toISOString()}`,
-      sql`${outings.fixedDatetime} <= ${reminderHi.toISOString()}`
-    ),
-    columns: {
-      id: true,
-      title: true,
-      slug: true,
-      shortId: true,
-      fixedDatetime: true,
-      location: true,
-    },
-    limit: SWEEPER_BATCH_LIMIT,
+  // heads-up 0–2 days before their event, never after — the email's
+  // heading says which.
+  report.j1Reminders = await sendDueReminders("j1", now, {
+    from: now,
+    to: new Date(now.getTime() + 2 * DAY_MS),
+    isDue: () => true,
+    errors: report.errors,
   });
-
-  for (const outing of reminding) {
-    // Stamp FIRST so a crash mid-email can't re-fire next tick. The cost of
-    // a stamped-but-unsent reminder is one missed J-1; the cost of an
-    // un-stamped double-send is annoying users. We'd rather miss than spam.
-    const stamped = await db
-      .update(outings)
-      .set({ reminderJ1SentAt: now })
-      .where(and(eq(outings.id, outing.id), isNull(outings.reminderJ1SentAt)))
-      .returning({ id: outings.id });
-    if (stamped.length === 0 || outing.fixedDatetime === null) {
-      continue;
-    }
-    try {
-      await sendJ1ReminderEmails({
-        outing: {
-          id: outing.id,
-          title: outing.title,
-          slug: outing.slug,
-          shortId: outing.shortId,
-          fixedDatetime: outing.fixedDatetime,
-          location: outing.location,
-        },
-      });
-      report.j1Reminders += 1;
-    } catch (err) {
-      report.errors.push(`j1:${outing.shortId}:${(err as Error).message}`);
-    }
-  }
 
   // --- 3. Mark outings "past" once the event is 24h+ in the rear view. ------
   // An outing sits in awaiting_purchase only until someone declares the

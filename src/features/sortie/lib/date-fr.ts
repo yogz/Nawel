@@ -18,6 +18,19 @@ export function parisDayKey(date: Date): string {
   return parisDayKeyFormatter.format(date);
 }
 
+/**
+ * Nombre de jours calendaires Paris entre `from` et `to` (0 = même jour,
+ * 1 = lendemain). Compte les minuits franchis, pas les tranches de 24h :
+ * mardi 23h → mercredi 8h vaut 1.
+ */
+export function parisCalendarDaysBetween(from: Date, to: Date): number {
+  // Les clés "YYYY-MM-DD" parsées en UTC donnent des minuits sans DST,
+  // donc la différence est toujours un multiple exact de 24h.
+  const fromMs = Date.parse(parisDayKey(from));
+  const toMs = Date.parse(parisDayKey(to));
+  return Math.round((toMs - fromMs) / (24 * 60 * 60 * 1000));
+}
+
 const parisHourMinuteFormatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: TZ,
   hour: "2-digit",
@@ -64,8 +77,9 @@ const dayMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
   timeZone: TZ,
 });
 
+// "7h30", pas "07h30" : l'usage français n'écrit pas le zéro de l'heure.
 const timeFormatter = new Intl.DateTimeFormat("fr-FR", {
-  hour: "2-digit",
+  hour: "numeric",
   minute: "2-digit",
   timeZone: TZ,
 });
@@ -180,6 +194,13 @@ export function formatOutingDateConversational(date: Date, now: Date = new Date(
     month: "long",
     timeZone: TZ,
   }).format(date);
+  const time = timeFormatter.format(date).replace(":", "h");
+  return `${day}${yearSuffixIfNeeded(date, now)} à ${time}`;
+}
+
+/** "samedi 21 novembre à 20h30" — variante email avec le jour de la semaine */
+export function formatOutingWeekdayDateConversational(date: Date, now: Date = new Date()): string {
+  const day = dayMonthFormatter.format(date);
   const time = timeFormatter.format(date).replace(":", "h");
   return `${day}${yearSuffixIfNeeded(date, now)} à ${time}`;
 }

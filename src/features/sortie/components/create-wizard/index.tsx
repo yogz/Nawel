@@ -1724,7 +1724,7 @@ function WhenStep({
                     weekday: "long",
                     day: "numeric",
                     month: "short",
-                    hour: "2-digit",
+                    hour: "numeric",
                     minute: "2-digit",
                     timeZone: "Europe/Paris",
                   })
@@ -2195,7 +2195,7 @@ function CommitStep({
       weekday: "long",
       day: "numeric",
       month: "long",
-      hour: "2-digit",
+      hour: "numeric",
       minute: "2-digit",
       timeZone: "Europe/Paris",
     })

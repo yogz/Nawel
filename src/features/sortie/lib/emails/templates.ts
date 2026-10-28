@@ -1,5 +1,10 @@
 import { escapeHtml } from "@/lib/html-escape";
-import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
+import {
+  formatOutingDateConversational,
+  formatOutingWeekdayDateConversational,
+  formatTimeOnly,
+  parisCalendarDaysBetween,
+} from "@/features/sortie/lib/date-fr";
 import { formatCents } from "@/features/sortie/lib/format";
 import { PAYMENT_TYPE_LABEL } from "@/features/sortie/lib/account-payment/rules";
 import { renderEmail } from "./layout";
@@ -461,42 +466,103 @@ export function rsvpClosedEmail(args: {
   };
 }
 
-/**
- * Fired exactly once per outing by the sweeper when fixedDatetime is ~24h
- * away. Idempotency enforced by the reminder_j1_sent_at timestamp — if
- * this email fails to send, we still stamp (we don't want to retry forever
- * and a missed reminder is better than a duplicated one).
- */
-export function j1ReminderEmail(args: {
+type ReminderArgs = {
   outingTitle: string;
   outingUrl: string;
   fixedDatetime: Date;
   location: string | null;
-}): { subject: string; html: string } {
+};
+
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+// Copy rule for reminders: no colon or em-dash in our own words (owner's
+// call) — the outing title may still carry its own dashes.
+function reminderEmail(
+  args: ReminderArgs,
+  copy: {
+    /** Heading and subject lead, e.g. "C’est demain". */
+    lead: string;
+    closing: string;
+    /** Inbox preview line: the full date a week out, just the time up close. */
+    preview: "date" | "time";
+  }
+): { subject: string; html: string } {
   const title = escapeHtml(args.outingTitle);
-  const when = escapeHtml(formatOutingDateConversational(args.fixedDatetime));
+  const when = capitalize(formatOutingWeekdayDateConversational(args.fixedDatetime));
   const locationLine = args.location
     ? `<br /><span style="color:${INK_MUTED};">${escapeHtml(args.location)}</span>`
     : "";
+  // The subject already says when and what; the preview carries the rest.
+  const previewParts = [
+    copy.preview === "date" ? when : `Rendez-vous à ${formatTimeOnly(args.fixedDatetime)}`,
+    args.location,
+  ].filter((part): part is string => !!part);
   const body = `
-    <h1 style="margin:0 0 14px;${H1}">C&rsquo;est demain</h1>
+    <h1 style="margin:0 0 14px;${H1}">${escapeHtml(copy.lead)}</h1>
     <p style="margin:0 0 18px;${BODY_P}">
       <strong>${title}</strong>${locationLine}
     </p>
     <p style="margin:0 0 28px;${BODY_P}">
-      ${when}. À demain.
+      ${escapeHtml(when)}. ${escapeHtml(copy.closing)}
     </p>
     <p style="margin:0;">
-      ${ctaButton(args.outingUrl, "Détails de la sortie")}
+      ${ctaButton(args.outingUrl, "Voir la sortie")}
     </p>
   `;
   return {
-    subject: `Demain — ${args.outingTitle}`,
+    subject: `${copy.lead} · ${args.outingTitle}`,
     html: renderEmail({
-      preheader: `${args.outingTitle} c'est demain. ${when}.`,
+      preheader: escapeHtml(previewParts.join(" · ")),
       body,
+      reason: "Tu reçois ce rappel parce que tu as répondu présent.",
     }),
   };
+}
+
+/**
+ * Fired exactly once per outing by the sweeper when fixedDatetime is within
+ * 48h. Idempotency enforced by the reminder_j1_sent_at timestamp — if
+ * this email fails to send, we still stamp (we don't want to retry forever
+ * and a missed reminder is better than a duplicated one).
+ *
+ * Le cron ne tourne qu'une fois par jour, donc l'écart réel varie de 0 à 2
+ * jours calendaires : le titre suit cet écart au lieu d'affirmer « demain ».
+ */
+export function j1ReminderEmail(
+  args: ReminderArgs,
+  now: Date = new Date()
+): { subject: string; html: string } {
+  const days = parisCalendarDaysBetween(now, args.fixedDatetime);
+  if (days <= 0) {
+    return reminderEmail(args, {
+      lead: "C’est aujourd’hui",
+      closing: "À tout à l’heure.",
+      preview: "time",
+    });
+  }
+  if (days === 1) {
+    return reminderEmail(args, { lead: "C’est demain", closing: "À demain.", preview: "time" });
+  }
+  return reminderEmail(args, {
+    lead: "C’est après-demain",
+    closing: "À très vite.",
+    preview: "time",
+  });
+}
+
+/**
+ * Fired once per outing by the sweeper on the Paris calendar day 7 days
+ * before fixedDatetime. Simple heads-up to keep the date free — no action
+ * asked. Idempotency via reminder_j7_sent_at, same stamp-first rule as J-1.
+ */
+export function j7ReminderEmail(args: ReminderArgs): { subject: string; html: string } {
+  return reminderEmail(args, {
+    lead: "Dans une semaine",
+    closing: "Pense à bloquer la date.",
+    preview: "date",
+  });
 }
 
 /**
