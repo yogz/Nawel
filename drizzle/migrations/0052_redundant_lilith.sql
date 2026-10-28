@@ -1,0 +1,1 @@
+ALTER TABLE "sortie"."outings" ADD COLUMN "already_bought" boolean DEFAULT false NOT NULL;

@@ -126,6 +126,10 @@ export const outings = sortie.table(
     // du feed. Sans bump, la transition open→awaiting_purchase ou
     // l'annulation d'une sortie reste invisible côté agenda abonné.
     sequence: integer("sequence").notNull().default(0),
+    // Sortie créée « billets déjà pris » : pas de réponses (RSVP fermé dès
+    // la création), l'organisateur choisit qui vient, et lui seul déclare
+    // l'achat. Cf. docs/superpowers/specs/2026-10-28-sortie-already-bought-design.md.
+    alreadyBought: boolean("already_bought").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
