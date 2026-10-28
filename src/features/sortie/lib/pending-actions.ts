@@ -67,6 +67,10 @@ type Outingish = {
   mode: "fixed" | "vote";
   creatorUserId: string | null;
   chosenTimeslotId: string | null;
+  /** Sortie « billets déjà pris » (cf. already-bought/rules.ts). */
+  alreadyBought?: boolean;
+  /** Places confirmées — distingue « qui vient ? » de « déclarer l'achat ». */
+  confirmedCount?: number;
 };
 
 type MyParticipantish = {
@@ -179,6 +183,13 @@ function pickAction(
 
     // 2. Achat à faire — sweeper a basculé après la deadline.
     if (o.status === "awaiting_purchase") {
+      // Billets déjà pris : rien à acheter, il reste à dire qui vient
+      // (organisateur seul inscrit) puis à déclarer le prix.
+      if (o.alreadyBought) {
+        return (o.confirmedCount ?? 0) <= 1
+          ? makeAction("buy-tickets", "hot", o, "qui vient ?", `${outingHref(o)}/qui-vient`)
+          : makeAction("buy-tickets", "hot", o, "déclarer l'achat", `${outingHref(o)}/achat`);
+      }
       return makeAction("buy-tickets", "hot", o, "acheter les tickets");
     }
 

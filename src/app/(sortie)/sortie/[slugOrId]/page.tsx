@@ -355,14 +355,27 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
 
       {viewerIsConfirmed && (
         <nav className="mt-8 flex flex-wrap justify-center gap-3 text-sm" aria-label="Argent">
-          {!existingPurchase && (
-            <Link
-              href={`/${canonical}/achat`}
-              className="inline-flex h-11 items-center rounded-full border border-hot-500 bg-hot-50 px-4 font-medium text-hot-500 transition-all hover:border-hot-400 hover:bg-hot-100 hover:text-hot-400"
-            >
-              Déclarer l&rsquo;achat
-            </Link>
-          )}
+          {/* Billets déjà pris : seul l'organisateur choisit qui vient et
+              déclare l'achat (cf. already-bought/rules.ts). */}
+          {!existingPurchase &&
+            outing.alreadyBought &&
+            session?.user?.id === outing.creatorUserId && (
+              <Link
+                href={`/${canonical}/qui-vient`}
+                className="inline-flex h-11 items-center rounded-full border border-acid-600 bg-acid-50 px-4 font-medium text-acid-700 transition-all hover:bg-acid-100"
+              >
+                Qui vient ?
+              </Link>
+            )}
+          {!existingPurchase &&
+            (!outing.alreadyBought || session?.user?.id === outing.creatorUserId) && (
+              <Link
+                href={`/${canonical}/achat`}
+                className="inline-flex h-11 items-center rounded-full border border-hot-500 bg-hot-50 px-4 font-medium text-hot-500 transition-all hover:border-hot-400 hover:bg-hot-100 hover:text-hot-400"
+              >
+                Déclarer l&rsquo;achat
+              </Link>
+            )}
           {viewerHasMoneyRow &&
             (allDebtsSettled ? (
               <Link
