@@ -63,6 +63,25 @@ describe("mayEditOutingMethods", () => {
 });
 
 describe("validateMethodLabel", () => {
+  // Contournement relevé par la relecture finale : des séparateurs effacés
+  // par le nettoyage reconstituaient un IBAN complet dans le libellé.
+  it.each(["FR76/1234/5678/9012", "06+12+34+56+78", "FR76:1234|5678:9012"])(
+    "refuse un numéro masqué par des séparateurs (%s)",
+    (raw) => {
+      expect(validateMethodLabel(raw)).toEqual({
+        ok: false,
+        message: "Pas de numéro dans le libellé.",
+      });
+    }
+  );
+
+  it("renvoie le libellé déjà nettoyé", () => {
+    expect(validateMethodLabel("  Compte <b>perso</b>  ")).toEqual({
+      ok: true,
+      label: "Compte bpersob",
+    });
+  });
+
   it("vide ou absent → pas de libellé", () => {
     expect(validateMethodLabel(undefined)).toEqual({ ok: true, label: null });
     expect(validateMethodLabel("   ")).toEqual({ ok: true, label: null });

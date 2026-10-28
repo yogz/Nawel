@@ -6,7 +6,6 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { encryptSecret } from "@/lib/crypto";
 import { auditLog, outings, purchaserPaymentMethods, purchases } from "@drizzle/sortie-schema";
-import { sanitizeStrictText } from "@/lib/sanitize";
 import { ibanPreview, normalizeIban, phonePreview } from "@/features/sortie/lib/iban";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
@@ -15,6 +14,7 @@ import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
 import {
   checkOutingMethodAdd,
+  validateMethodLabel,
   mayEditOutingMethods,
 } from "@/features/sortie/lib/account-payment/rules";
 import type { FormActionState } from "./outing-actions";
@@ -95,7 +95,13 @@ export async function addPaymentMethodAction(
   const valueEncrypted = encryptSecret(canonicalValue);
   const valuePreview =
     data.type === "iban" ? ibanPreview(canonicalValue) : phonePreview(canonicalValue);
-  const displayLabel = data.displayLabel ? sanitizeStrictText(data.displayLabel, 100) : null;
+  // Même contrôle que les moyens du compte : ce libellé s'affiche chez les
+  // débiteurs, il ne doit pas pouvoir porter un numéro (cf. rules.ts).
+  const labelCheck = validateMethodLabel(data.displayLabel);
+  if (!labelCheck.ok) {
+    return { errors: { displayLabel: [labelCheck.message] } };
+  }
+  const displayLabel = labelCheck.label;
 
   const existing = await db
     .select({

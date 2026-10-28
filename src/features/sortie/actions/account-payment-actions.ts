@@ -7,7 +7,6 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { encryptSecret } from "@/lib/crypto";
-import { sanitizeStrictText } from "@/lib/sanitize";
 import { auditLog, userPaymentMethods } from "@drizzle/sortie-schema";
 import { ibanPreview, normalizeIban, phonePreview } from "@/features/sortie/lib/iban";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
@@ -15,7 +14,6 @@ import { ACCOUNT_PAYMENT_AUDIT_ACTION, hashIp } from "@/features/sortie/lib/audi
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import {
   checkAccountMethodAdd,
-  MAX_LABEL_LENGTH,
   mayManageAccountMethods,
   PAYMENT_TYPE_LABEL,
   validateMethodLabel,
@@ -97,11 +95,9 @@ export async function addAccountPaymentMethodAction(
   if (!label.ok) {
     return { errors: { displayLabel: [label.message] } };
   }
-  // Même nettoyage que l'ajout par sortie ; un libellé réduit à rien
-  // (que des caractères refusés) devient « pas de libellé ».
-  const displayLabel = label.label
-    ? sanitizeStrictText(label.label, MAX_LABEL_LENGTH) || null
-    : null;
+  // `validateMethodLabel` renvoie le libellé déjà nettoyé (et contrôlé après
+  // nettoyage) ; un libellé réduit à rien devient « pas de libellé ».
+  const displayLabel = label.label;
 
   const gate = await rateLimit({
     key: `acct-pm:${who.userId}`,

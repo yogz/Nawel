@@ -1,3 +1,4 @@
+import { sanitizeStrictText } from "@/lib/sanitize";
 /**
  * Règles pures des moyens de paiement enregistrés sur le compte. Cf.
  * docs/superpowers/specs/2026-10-28-sortie-account-payment-methods-design.md §5 bis.
@@ -68,17 +69,20 @@ export function mayEditOutingMethods(a: {
 export function validateMethodLabel(
   raw: string | undefined
 ): { ok: true; label: string | null } | { ok: false; message: string } {
-  const trimmed = (raw ?? "").trim();
-  if (trimmed.length === 0) {
+  // Nettoyage AVANT contrôle : sinon des séparateurs effacés ensuite
+  // (« FR76/1234/… ») reconstituent un numéro complet après coup.
+  const label = sanitizeStrictText(raw ?? "", 200);
+  if (label.length === 0) {
     return { ok: true, label: null };
   }
-  if (trimmed.length > MAX_LABEL_LENGTH) {
+  if (label.length > MAX_LABEL_LENGTH) {
     return { ok: false, message: "40 caractères maximum." };
   }
-  if (/\d{9,}/.test(trimmed.replace(/[\s.\-_]/g, ""))) {
+  // Seuls lettres et chiffres comptent : tout séparateur est ignoré.
+  if (/\d{9,}/.test(label.replace(/[^\p{L}\p{N}]/gu, ""))) {
     return { ok: false, message: "Pas de numéro dans le libellé." };
   }
-  return { ok: true, label: trimmed.replace(/\s+/g, " ") };
+  return { ok: true, label };
 }
 
 /** Même type + même aperçu = déjà présent. */
