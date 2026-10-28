@@ -10,7 +10,7 @@ import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
 import {
   listMyParticipantsForOutings,
-  listPublicProfileOutings,
+  listProfileOutings,
 } from "@/features/sortie/queries/outing-queries";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import {
@@ -82,7 +82,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // pas la sortie isolée. Le partage type est "voilà ce que je vais voir,
   // dites-moi si vous voulez venir" en WhatsApp/DM aux amis — donc le titre
   // affiche la densité (count) et la description liste les prochaines.
-  const { upcoming, past } = await listPublicProfileOutings(row.id);
+  const { upcoming, past } = await listProfileOutings(row.id);
   const datedUpcoming = upcoming
     .filter((o): o is typeof o & { startsAt: Date } => o.startsAt !== null)
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
@@ -194,7 +194,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
     row.rsvpInviteToken !== null &&
     row.rsvpInviteToken === k;
 
-  const { upcoming: upcomingRaw, past } = await listPublicProfileOutings(row.id);
+  const { upcoming: upcomingRaw, past } = await listProfileOutings(row.id);
   // La query renvoie `desc(createdAt)` — sans tri par horizon temporel,
   // une sortie créée hier qui se passe dans 3 mois remonte avant une
   // sortie de samedi prochain créée la semaine dernière. Aligne sur
@@ -460,7 +460,7 @@ function PastSection({
   );
 }
 
-type OutingRow = Awaited<ReturnType<typeof listPublicProfileOutings>>["upcoming"][number];
+type OutingRow = Awaited<ReturnType<typeof listProfileOutings>>["upcoming"][number];
 type ParticipantRow =
   Awaited<ReturnType<typeof listMyParticipantsForOutings>> extends Map<string, infer V> ? V : never;
 

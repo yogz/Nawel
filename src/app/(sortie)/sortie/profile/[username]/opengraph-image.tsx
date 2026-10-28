@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { user } from "@drizzle/schema";
-import { listPublicProfileOutings } from "@/features/sortie/queries/outing-queries";
+import { listProfileOutings } from "@/features/sortie/queries/outing-queries";
 
 // Format mini-agenda : carte profil = menu des prochaines sorties (4 lignes
 // datées + compteur "+ N autres"). Cible le cas d'usage natif "voilà ce que
@@ -49,7 +49,7 @@ export default async function Image({ params }: Props) {
     return renderFallback();
   }
 
-  const { upcoming } = await listPublicProfileOutings(row.id);
+  const { upcoming } = await listProfileOutings(row.id);
 
   // Re-trie par startsAt asc (la query renvoie en `desc(createdAt)` par
   // défaut). Pour le menu il faut la chronologie "ce qui arrive en premier".
